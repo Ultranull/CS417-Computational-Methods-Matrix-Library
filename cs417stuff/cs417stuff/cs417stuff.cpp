@@ -145,7 +145,7 @@ int main() {
 		cout << z;
 
 	}
-	
+	//this is a test to see if i can get around not using git
 	getchar();
 }
 
