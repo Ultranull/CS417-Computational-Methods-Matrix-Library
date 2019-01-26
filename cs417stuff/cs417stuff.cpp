@@ -137,15 +137,26 @@ int main() {
 	} {
 		using namespace dml;
 		typedef mat<4, 4, float> mat4;
-		typedef mat<1, 4, float> scalor;
+		typedef mat<1, 1, float> scalor;
+		typedef mat<4, 1, float> vec4;
 
-		mat4 x = mat4::identity();
-		scalor y(2);
-		auto z = x * y;
-		cout << z;
+		mat4 x({ 
+			{1,2,3,4}, 
+			{1,2,3,4}, 
+			{1,2,3,4}, 
+			{1,2,3,4}, 
+		});
+		mat4 y({
+			{1,2,3,4},
+			{1,2,3,4},
+			{1,2,3,4},
+			{1,2,3,4},
+		});
+
+		auto z = y.col(0);
+
 
 	}
-	//will it recognize changes
 	getchar();
 }
 

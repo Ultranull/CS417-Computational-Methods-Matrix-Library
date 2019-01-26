@@ -76,8 +76,8 @@ namespace dml {
 			t.data = d;
 			data = t.transpose().data;
 		}
-		TYPE operator()(void) {
-			return data[0][0];
+		TYPE operator()(int i=0) {
+			return data[i][i];
 		}
 		mat<1, rows, TYPE> col(unsigned int ind) { 
 			mat<1, rows, TYPE> out;
@@ -98,6 +98,11 @@ namespace dml {
 						out.data[r][c] = data[c][r];
 			return out;
 		}
+
+		void inflate(int c,int r){
+			
+		}
+
 		static mat<cols, rows, TYPE> identity() {
 			mat<cols, rows, TYPE> out;
 			for (int r = 0; r < rows; r++)
@@ -127,13 +132,28 @@ namespace dml {
 		return out;
 	}
 	template<size_t cols,size_t rows,class TYPE>
-	mat<cols, rows, TYPE> operator*(TYPE s, mat<cols, rows, TYPE> a) {
+	mat<cols, rows, TYPE> operator*(mat<1, 1, TYPE> s, mat<cols, rows, TYPE> a) {
 		mat<cols, rows, TYPE> out;
 		for (int i = 0; i < rows; i++)
 			for (int j = 0; j < cols; j++)
-					out.data[j][i] = s*a.data[j][i];
+					out.data[j][i] = s(0)*a.data[j][i];
 		return out;
 	}
 
+	template<size_t cols, size_t rows, class TYPE>
+	mat<cols, rows, TYPE> operator+(mat<cols, rows, TYPE> s, mat<cols, rows, TYPE> a) {
+		mat<cols, rows, TYPE> out;
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++)
+				out.data[j][i] = s.data[j][i] +a.data[j][i];
+		return out;
+	}
+	template<size_t cols, size_t rows, class TYPE>
+	mat<cols, rows, TYPE> operator-(mat<cols, rows, TYPE> s, mat<cols, rows, TYPE> a) {
+		mat<cols, rows, TYPE> out;
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++)
+				out.data[j][i] = s.data[j][i] - a.data[j][i];
+		return out;
+	}
 }
-//does it notice multiple files
