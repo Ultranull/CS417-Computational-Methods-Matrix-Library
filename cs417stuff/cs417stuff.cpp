@@ -10,6 +10,11 @@
 using namespace std;
 using namespace dml;
 
+template<int cols,int rows>
+mat<1, rows, float> GaussianElimination(mat<cols, rows, float> A, mat<1, rows, float> b) {
+	upperTriangular(A, b);
+	return backSolve(A, b);
+}
 
 int main() { 
 		typedef mat<4, 4, float> mat4;
@@ -28,13 +33,10 @@ int main() {
 			{9},
 			{4}});
 
-		upperTriangular(A, b);
-
-		cout << A << endl;
+		auto x = GaussianElimination(A, b);
+		auto z = A * x;
+		cout << z << endl;
 		cout << b << endl;
-
-		vec4 x=backSolve(A,b);
-		cout << x << endl;
 
 	getchar();
 }
