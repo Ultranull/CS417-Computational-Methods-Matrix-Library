@@ -146,11 +146,11 @@ namespace dml {
 		x.insertROW(b, s);
 		x.insertROW(a, temp);
 	}
-	template<int cols, int rows>
-	void upperTriangular(mat<cols, rows, float> &A, mat<1, rows, float> &b) {
+	template<int cols, int rows,class TYPE>
+	void upperTriangular(mat<cols, rows, TYPE> &A, mat<1, rows, TYPE> &b) {
 		for (int k = 0; k < A.numcols(); k++) {
 			int ind = 0;
-			float max = 0;
+			TYPE max = 0;
 			for (int i = 0; i < A.numrows(); i++)
 				if (abs(A[k][i]) > max) {
 					ind = i;
@@ -159,7 +159,7 @@ namespace dml {
 			swapROW(A, ind, k);
 			swapROW(b, ind, k);
 
-			float Ak = A(k);
+			TYPE Ak = A(k);
 			auto rowk = A.row(k);
 			rowk = rowk / Ak;
 			A.insertROW(k, rowk);
@@ -169,25 +169,25 @@ namespace dml {
 			b.insertROW(k, bk);
 
 			for (int r = k + 1; r < A.numrows(); r++) {
-				float val = A[k][r];
+				TYPE val = A[k][r];
 				for (int j = k; j < A.numcols(); j++) {
-					A.data[j][r] = A[j][r] - (val*A[j][k]);
+					A[j][r] = A[j][r] - (val*A[j][k]);
 				}
-				b.data[0][r] = b[0][r] - val * b[0][k];
+				b[0][r] = b[0][r] - val * b[0][k];
 			}
 		}
 	}
 
-	template<int cols, int rows>
-	mat<1, rows, float> backSolve(mat<cols, rows, float> A, mat<1, rows, float> b) {
-		mat<1, rows, float> x(0.f);
-		x.data[0][x.numrows() - 1] = b[0][b.numrows() - 1];
+	template<int cols, int rows,class TYPE>
+	mat<1, rows, TYPE> backSolve(mat<cols, rows, TYPE> A, mat<1, rows, TYPE> b) {
+		mat<1, rows, TYPE> x(0.f);
+		x[0][x.numrows() - 1] = b[0][b.numrows() - 1];
 		for (int r = A.numrows() - 2; r >= 0; r--) {
-			float sum = 0;
+			TYPE sum = 0;
 			for (int c = r + 1; c < A.numcols(); c++) {
 				sum += A[c][r] * x[0][c];
 			}
-			x.data[0][r] = b[0][r] - sum;
+			x[0][r] = b[0][r] - sum;
 		}
 		return x;
 	}
