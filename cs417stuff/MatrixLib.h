@@ -177,4 +177,18 @@ namespace dml {
 			}
 		}
 	}
+
+	template<int cols, int rows>
+	mat<1, rows, float> backSolve(mat<cols, rows, float> A, mat<1, rows, float> b) {
+		mat<1, rows, float> x(0.f);
+		x.data[0][x.numrows() - 1] = b[0][b.numrows() - 1];
+		for (int r = A.numrows() - 2; r >= 0; r--) {
+			float sum = 0;
+			for (int c = r + 1; c < A.numcols(); c++) {
+				sum += A[c][r] * x[0][c];
+			}
+			x.data[0][r] = b[0][r] - sum;
+		}
+		return x;
+	}
 }

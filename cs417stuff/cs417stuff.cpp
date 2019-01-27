@@ -10,6 +10,7 @@
 using namespace std;
 using namespace dml;
 
+
 int main() { 
 		typedef mat<4, 4, float> mat4;
 		typedef mat<1, 1, float> scalor;
@@ -32,15 +33,7 @@ int main() {
 		cout << A << endl;
 		cout << b << endl;
 
-		vec4 x(0);
-		x.data[0][x.numrows() - 1] = b[0][b.numrows() - 1];
-		for (int r = 0; r <= A.numrows() - 2; r++) {
-			float sum = 0;
-			for (int c = r + 1; c < A.numcols() - 1; c++) {
-				sum += A[c][r] * b[0][c];
-			}
-			x.data[0][r] = b[0][r] - sum;
-		}
+		vec4 x=backSolve(A,b);
 		cout << x << endl;
 
 	getchar();
