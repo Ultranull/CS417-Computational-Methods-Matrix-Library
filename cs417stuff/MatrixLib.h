@@ -8,58 +8,6 @@
 using namespace std;
 
 namespace dml {
-/*
-	template <size_t cols, class TYPE>
-	struct vec {
-		vector<TYPE> data;
-		vec() :vec(TYPE()) {
-		}
-		vec(TYPE t) {
-			data = vector<TYPE>(cols, t);
-		}
-		vec(initializer_list<TYPE> l) {
-			for (int i = 0; i < cols; i++)
-				data.push_back(*(l.begin() + i));
-		}
-		vec(const vec<cols, TYPE> &a) {
-			this->data = a.data;
-		}
-		TYPE& operator[](unsigned int i) { return data[i]; }
-	};
-	template <size_t cols, class TYPE>
-	vec<cols, TYPE> operator+(vec<cols, TYPE> a, vec<cols, TYPE> b) {
-		vec<cols, TYPE> out;
-		for (int i = 0; i < cols; i++)
-			out[i] = a[i] + b[i];
-		return out;
-	}
-	template <size_t cols, class TYPE>
-	vec<cols, TYPE> operator-(vec<cols, TYPE> a, vec<cols, TYPE> b) {
-		vec<cols, TYPE> out;
-		for (int i = 0; i < cols; i++)
-			out[i] = a[i] - b[i];
-		return out;
-	}
-	template <size_t cols, class TYPE>
-	vec<cols, TYPE> operator*(TYPE a, vec<cols, TYPE> b) {
-		vec<cols, TYPE> out;
-		for (int i = 0; i < cols; i++)
-			out[i] = a * b[i];
-		return out;
-	}
-	template <size_t cols, class TYPE>
-	TYPE dot(vec<cols, TYPE> a, vec<cols, TYPE> b) {
-		TYPE out = TYPE();
-		for (int i = 0; i < cols; i++)
-			out += a[i] * b[i];
-		return out;
-	}
-	template <size_t cols, class TYPE>
-	ostream& operator<<(ostream &out, vec<cols, TYPE> &v) {
-		for (int i = 0; i < cols; i++)
-			out << v[i] << " ";
-		return out;
-	}*/
 	template <size_t cols, size_t rows, class TYPE>
 	struct mat {
 		vector<vector<TYPE>> data;
@@ -79,16 +27,18 @@ namespace dml {
 		TYPE operator()(int i=0) {
 			return data[i][i];
 		}
+		vector<TYPE>& operator[](int i) {
+			return data[i];
+		}
 		mat<1, rows, TYPE> col(unsigned int ind) { 
 			mat<1, rows, TYPE> out;
-			for (int i = 0; i < rows; i++)
-				out.data[ind][i] = data[0][i];
+			out.data[ind] = data[0];
 			return out; 
 		}
 		mat<cols, 1, TYPE> row(unsigned int ind) {
 			mat<cols, 1, TYPE> out;
 			for (int i = 0; i < cols; i++)
-				out.data[i][ind] = data[i][0];
+				out.data[i][0] = data[i][ind];
 			return out;
 		}
 		mat<rows, cols, TYPE> transpose() {
@@ -99,10 +49,19 @@ namespace dml {
 			return out;
 		}
 
-		void inflate(int c,int r){
-			
+		void insertROW(int ind,mat<cols, 1, TYPE> r){
+			for (int i = 0; i < cols; i++)
+				data[i][ind] = r.data[i][0];
 		}
-
+		void insertCOL(int ind,mat<1, rows, TYPE> r) {
+				data[ind] = r.data[0];
+		}
+		int numcols() {
+			return cols;
+		}
+		int numrows() {
+			return rows;
+		}
 		static mat<cols, rows, TYPE> identity() {
 			mat<cols, rows, TYPE> out;
 			for (int r = 0; r < rows; r++)
@@ -117,7 +76,7 @@ namespace dml {
 		for (int r = 0; r < rows; r++) {
 			out << "[";
 			for (int c = 0; c < cols; c++)
-				out <<setw(3)<< m.data[c][r] << " ";
+				out <<setw(10)<< m.data[c][r] << " ";
 			out << "]\n";
 		}
 		return out;
@@ -139,6 +98,30 @@ namespace dml {
 					out.data[j][i] = s(0)*a.data[j][i];
 		return out;
 	}
+	template<size_t cols, size_t rows, class TYPE>
+	mat<cols, rows, TYPE> operator/(mat<cols, rows, TYPE> a, mat<1, 1, TYPE> s) {
+		mat<cols, rows, TYPE> out;
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++)
+				out.data[j][i] = a.data[j][i]/ s(0);
+		return out;
+	}
+	template<size_t cols, size_t rows, class TYPE>
+	mat<cols, rows, TYPE> operator*(TYPE s, mat<cols, rows, TYPE> a) {
+		mat<cols, rows, TYPE> out;
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++)
+				out.data[j][i] = s*a.data[j][i];
+		return out;
+	}
+	template<size_t cols, size_t rows, class TYPE>
+	mat<cols, rows, TYPE> operator/(mat<cols, rows, TYPE> a, TYPE s) {
+		mat<cols, rows, TYPE> out;
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++)
+				out.data[j][i] = a.data[j][i] / s;
+		return out;
+	}
 
 	template<size_t cols, size_t rows, class TYPE>
 	mat<cols, rows, TYPE> operator+(mat<cols, rows, TYPE> s, mat<cols, rows, TYPE> a) {
@@ -155,5 +138,43 @@ namespace dml {
 			for (int j = 0; j < cols; j++)
 				out.data[j][i] = s.data[j][i] - a.data[j][i];
 		return out;
+	}
+	template<int cols, int rows, class TYPE>
+	void swapROW(mat<cols, rows, TYPE> &x, int a, int b) {
+		auto s = x.row(a);
+		auto temp = x.row(b);
+		x.insertROW(b, s);
+		x.insertROW(a, temp);
+	}
+	template<int cols, int rows>
+	void upperTriangular(mat<cols, rows, float> &A, mat<1, rows, float> &b) {
+		for (int k = 0; k < A.numcols(); k++) {
+			int ind = 0;
+			float max = 0;
+			for (int i = 0; i < A.numrows(); i++)
+				if (abs(A[k][i]) > max) {
+					ind = i;
+					max = abs(A[k][i]);
+				}
+			swapROW(A, ind, k);
+			swapROW(b, ind, k);
+
+			float Ak = A(k);
+			auto rowk = A.row(k);
+			rowk = rowk / Ak;
+			A.insertROW(k, rowk);
+
+			auto bk = b.row(k);
+			bk = bk / Ak;
+			b.insertROW(k, bk);
+
+			for (int r = k + 1; r < A.numrows(); r++) {
+				float val = A[k][r];
+				for (int j = k; j < A.numcols(); j++) {
+					A.data[j][r] = A[j][r] - (val*A[j][k]);
+				}
+				b.data[0][r] = b[0][r] - val * b[0][k];
+			}
+		}
 	}
 }
