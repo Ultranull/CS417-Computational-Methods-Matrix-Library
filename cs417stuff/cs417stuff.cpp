@@ -16,6 +16,19 @@ mat<1, rows, TYPE> GaussianElimination(mat<cols, rows, TYPE> A, mat<1, rows, TYP
 	return backSolve(A, b);
 }
 
+template<int cols, int rows, class TYPE>
+mat<cols,rows,TYPE> singularMatrix(int n){
+	/*
+
+	generate random matrix using uniform random
+	sum rows and mult sum by n
+	sum becomes diagnol
+	return
+
+	*/
+	return mat<cols, rows, TYPE>();
+}
+
 int main() { 
 		typedef mat<4, 4, double> mat4;
 		typedef mat<1, 4, double> vec4;
