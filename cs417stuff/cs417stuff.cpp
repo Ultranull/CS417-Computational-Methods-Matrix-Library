@@ -36,7 +36,19 @@ int main() {
 		auto z = A * x;
 		cout << z << endl;
 		cout << b << endl;
-		//make a edit and then push it
+
+		mat4 L, U;
+		decomposeMatrix(A, L, U);
+
+		cout << L << endl;
+		cout << U << endl;
+
+		auto out = U*L;
+		cout << out << endl;
+		cout << A << endl;
+
+
+
 	getchar();
 }
 
