@@ -4,6 +4,8 @@
 #include <iomanip>
 #include <vector>
 #include <initializer_list>
+#include <random>
+#include <ctime>
 
 using namespace std;
 
@@ -191,7 +193,11 @@ namespace dml {
 		}
 		return x;
 	}
-
+	template<int cols, int rows, class TYPE>
+	mat<1, rows, TYPE> GaussianElimination(mat<cols, rows, TYPE> A, mat<1, rows, TYPE> b) {
+		upperTriangular(A, b);
+		return backSolve(A, b);
+	}
 	template<int n, class TYPE>
 	void decomposeMatrix(mat<n, n, TYPE> A, mat<n, n, TYPE> &L, mat<n, n, TYPE> &U) {
 		int i, j, k;
@@ -222,5 +228,26 @@ namespace dml {
 				U[j][i] = (A[j][i] - sum) / L[j][j];
 			}
 		}
+	}
+	template<int cols, int rows, class TYPE>
+	mat<cols, rows, TYPE> singularMatrix(int n = 3) {
+		default_random_engine *gen = new default_random_engine(time(NULL));
+		uniform_real_distribution<TYPE> dist;
+		mat<cols, rows, TYPE> out;
+
+		for (int c = 0; c < cols; c++) {
+			for (int r = 0; r < rows; r++) {
+				out[c][r] = dist(*gen);
+			}
+		}
+
+		for (int c = 0; c < cols; c++) {
+			TYPE sum = TYPE();
+			for (int r = 0; r < rows; r++) {
+				sum += abs(out[c][r]);
+			}
+			out[c][c] = sum * n;
+		}
+		return out;
 	}
 }
