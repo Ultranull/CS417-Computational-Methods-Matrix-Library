@@ -4,17 +4,13 @@
 #include <iomanip>
 #include <stdio.h>
 #include <initializer_list>
+#include <random>
+#include <ctime>
 
 #include "MatrixLib.h"
 
 using namespace std;
 using namespace dml;
-
-template<int cols,int rows,class TYPE>
-mat<1, rows, TYPE> GaussianElimination(mat<cols, rows, TYPE> A, mat<1, rows, TYPE> b) {
-	upperTriangular(A, b);
-	return backSolve(A, b);
-}
 
 int main() { 
 		typedef mat<4, 4, double> mat4;
@@ -36,6 +32,29 @@ int main() {
 		auto z = A * x;
 		cout << z << endl;
 		cout << b << endl;
+
+		mat4 L, U;
+		decomposeMatrix(A, L, U);
+
+		cout << L << endl;
+		cout << U << endl;
+
+		auto out = U*L;
+		cout << out << endl;
+		cout << A << endl;
+		cout << endl<<endl;
+		mat4 m = singularMatrix<4,4,double>(1);
+		cout << m << endl;
+		vec4 bb({
+			{ 6 },
+			{ 8 },
+			{ 2 },
+			{ 7 },
+			});
+		auto xx = GaussianElimination(m, bb);
+		auto zz = m * xx;
+		cout << bb << endl;
+		cout << zz << endl;
 
 	getchar();
 }
