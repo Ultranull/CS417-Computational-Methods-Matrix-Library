@@ -27,10 +27,10 @@ int main() {
 			{6,2,5,4}, 
 		});
 		vec4 b({
+			{1},
 			{3},
-			{2},
-			{9},
-			{4}});
+			{1},
+			{9}});
 
 		auto x = GaussianElimination(A, b);
 		auto z = A * x;
