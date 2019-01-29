@@ -16,45 +16,30 @@ int main() {
 		typedef mat<4, 4, double> mat4;
 		typedef mat<1, 4, double> vec4;
 
-		mat4 A({ 
-			{1,1,3,7}, 
-			{4,2,9,4}, 
-			{3,4,3,4}, 
-			{6,2,5,4}, 
-		});
-		vec4 b({
-			{1},
-			{3},
-			{1},
-			{9}});
+		mat4 A=singularMatrix<4,4,double>(1,10,1,true);
+		vec4 b=randomVector<4,double>(1,10,true);
 
 		auto x = GaussianElimination(A, b);
 		auto z = A * x;
-		cout << z << endl;
+		cout << "b:\n";
 		cout << b << endl;
+		cout << "z:\n";
+		cout << z << endl;
 
 		mat4 L, U;
 		decomposeMatrix(A, L, U);
 
+		cout << "L:\n";
 		cout << L << endl;
+		cout << "U:\n";
 		cout << U << endl;
 
 		auto out = U*L;
-		cout << out << endl;
+		cout << "A:\n";
 		cout << A << endl;
+		cout << "LU:\n";
+		cout << out << endl;
 		cout << endl<<endl;
-		mat4 m = singularMatrix<4,4,double>(1);
-		cout << m << endl;
-		vec4 bb({
-			{ 6 },
-			{ 8 },
-			{ 2 },
-			{ 7 },
-			});
-		auto xx = GaussianElimination(m, bb);
-		auto zz = m * xx;
-		cout << bb << endl;
-		cout << zz << endl;
 
 	getchar();
 }

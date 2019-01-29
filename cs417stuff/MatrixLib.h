@@ -230,14 +230,17 @@ namespace dml {
 		}
 	}
 	template<int cols, int rows, class TYPE>
-	mat<cols, rows, TYPE> singularMatrix(int n = 3) {
-		default_random_engine *gen = new default_random_engine(time(NULL));
-		uniform_real_distribution<TYPE> dist;
+	mat<cols, rows, TYPE> singularMatrix(TYPE min,TYPE max,int n = 1,bool rounded=false) {
+		default_random_engine gen(time(NULL));
+		uniform_real_distribution<TYPE> dist(min,max);
 		mat<cols, rows, TYPE> out;
 
 		for (int c = 0; c < cols; c++) {
 			for (int r = 0; r < rows; r++) {
-				out[c][r] = dist(*gen);
+				if(rounded)
+					out[c][r] = round(dist(gen));
+				else
+					out[c][r] = dist(gen);
 			}
 		}
 
@@ -247,6 +250,19 @@ namespace dml {
 				sum += abs(out[c][r]);
 			}
 			out[c][c] = sum * n;
+		}
+		return out;
+	}
+	template<int rows, class TYPE>
+	mat<1, rows, TYPE> randomVector(TYPE min, TYPE max, bool rounded = false) {
+		default_random_engine gen(time(NULL));
+		uniform_real_distribution<TYPE> dist(min, max);
+		mat<1, rows, TYPE> out;
+		for (int i = 0; i < rows; i++) {
+			if (rounded)
+				out[0][i] = round(dist(gen));
+			else
+				out[0][i] = (dist(gen));
 		}
 		return out;
 	}
