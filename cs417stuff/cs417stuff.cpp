@@ -34,12 +34,17 @@ int main() {
 		cout << "U:\n";
 		cout << U << endl;
 
-		auto out = U*L;
+		auto out = L*U;
 		cout << "A:\n";
 		cout << A << endl;
 		cout << "LU:\n";
 		cout << out << endl;
 		cout << endl<<endl;
+
+		auto y = U * x;
+		auto res = forwordSolve(L, b);
+		cout << "y:\n" << y << endl;
+		cout << "res:\n" << res << endl;
 
 	getchar();
 }

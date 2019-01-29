@@ -194,6 +194,19 @@ namespace dml {
 		return x;
 	}
 	template<int cols, int rows, class TYPE>
+	mat<1, rows, TYPE> forwordSolve(mat<cols, rows, TYPE> A, mat<1, rows, TYPE> b) {
+		mat<1, rows, TYPE> x(0.f);
+		x[0][0] = b[0][0]/A[0][0];
+		for (int r = 1; r < A.numrows(); r++) {
+			TYPE sum = 0;
+			for (int c = 0; c < r; c++) {
+				sum += A[c][r] * x[0][c];
+			}
+			x[0][r] = (b[0][r] - sum)/A[r][r];
+		}
+		return x;
+	}
+	template<int cols, int rows, class TYPE>
 	mat<1, rows, TYPE> GaussianElimination(mat<cols, rows, TYPE> A, mat<1, rows, TYPE> b) {
 		upperTriangular(A, b);
 		return backSolve(A, b);
@@ -211,21 +224,17 @@ namespace dml {
 			for (i = j; i < n; i++) {
 				sum = 0;
 				for (k = 0; k < j; k++) {
-					sum = sum + L[i][k] * U[k][j];
+					sum = sum + L[k][i] * U[j][k];
 				}
-				L[i][j] = A[i][j] - sum;
+				L[j][i] = A[j][i] - sum;
 			}
 
 			for (i = j; i < n; i++) {
 				sum = 0;
 				for (k = 0; k < j; k++) {
-					sum = sum + L[j][k] * U[k][i];
+					sum = sum + L[k][j] * U[i][k];
 				}
-				if (L[j][j] == 0) {
-					printf("det(L) close to 0!\n Can't divide by 0...\n");
-					exit(EXIT_FAILURE);
-				}
-				U[j][i] = (A[j][i] - sum) / L[j][j];
+				U[i][j] = (A[i][j] - sum) / L[j][j];
 			}
 		}
 	}
