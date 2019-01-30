@@ -126,6 +126,15 @@ namespace dml {
 	}
 
 	template<size_t cols, size_t rows, class TYPE>
+	mat<cols, rows, TYPE> operator/(TYPE s,mat<cols, rows, TYPE> a) {
+		mat<cols, rows, TYPE> out;
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < cols; j++)
+				out.data[j][i] = s/a.data[j][i];
+		return out;
+	}
+
+	template<size_t cols, size_t rows, class TYPE>
 	mat<cols, rows, TYPE> operator+(mat<cols, rows, TYPE> s, mat<cols, rows, TYPE> a) {
 		mat<cols, rows, TYPE> out;
 		for (int i = 0; i < rows; i++)
