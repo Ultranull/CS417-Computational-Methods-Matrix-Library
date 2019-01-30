@@ -108,6 +108,15 @@ namespace dml {
 				out.data[j][i] = a.data[j][i]/ s(0);
 		return out;
 	}
+
+	template<size_t rows, class TYPE>
+	mat<1, rows, TYPE> operator*(mat<1, rows, TYPE> a, mat<1, rows, TYPE> b) {
+		mat<1, rows, TYPE> out;
+		for (int i = 0; i < rows; i++)
+				out.data[0][i] = a.data[0][i] *b.data[0][i];
+		return out;
+	}
+
 	template<size_t cols, size_t rows, class TYPE>
 	mat<cols, rows, TYPE> operator*(TYPE s, mat<cols, rows, TYPE> a) {
 		mat<cols, rows, TYPE> out;

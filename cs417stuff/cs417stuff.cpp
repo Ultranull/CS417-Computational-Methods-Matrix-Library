@@ -30,7 +30,7 @@ int main() {
 		cout << A << endl << out << endl;
 		cout << endl << endl;
 
-		mat4 Dinv = 1. / D;
+		mat4 Dinv = 1. / D;//make its column vec
 		mat4 LU = L + U;
 		vec4 xold= randomVector<N, double>(min, max, true), xnew;
 		int iters = 1;
