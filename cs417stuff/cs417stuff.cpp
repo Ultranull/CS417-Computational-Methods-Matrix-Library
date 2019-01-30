@@ -12,6 +12,8 @@
 using namespace std;
 using namespace dml;
 
+
+
 int main() {
 	const int N = 4;
 	double min = 0, max = 100;
@@ -21,33 +23,40 @@ int main() {
 
 	mat4 A = singularMatrix<N, N, double>(min, max, 1,true);
 	vec4 b = randomVector<N, double>(min, max,true);
+	{
+		mat4 L, D, U;
+		split(A, L, D, U);
+		auto out = L + D + U;
+		cout << A << endl << out << endl;
+	}
+	/*{
+		auto x = GaussianElimination(A, b);
+		auto z = A * x;
+		cout << "b:\n";
+		cout << b << endl;
+		cout << "Ax:\n";
+		cout << z << endl;
 
-	auto x = GaussianElimination(A, b);
-	auto z = A * x;
-	cout << "b:\n";
-	cout << b << endl;
-	cout << "Ax:\n";
-	cout << z << endl;
+		mat4 L, U;
+		decomposeMatrix(A, L, U);
 
-	mat4 L, U;
-	decomposeMatrix(A, L, U);
+		cout << "L:\n";
+		cout << L << endl;
+		cout << "U:\n";
+		cout << U << endl;
 
-	cout << "L:\n";
-	cout << L << endl;
-	cout << "U:\n";
-	cout << U << endl;
+		auto out = L * U;
+		cout << "A:\n";
+		cout << A << endl;
+		cout << "LU:\n";
+		cout << out << endl;
 
-	auto out = L * U;
-	cout << "A:\n";
-	cout << A << endl;
-	cout << "LU:\n";
-	cout << out << endl;
+		auto res = U * x;
+		auto y = forwordSolve(L, b);
+		cout << "y:\n" << y << endl;
+		cout << "Ux:\n" << res << endl;
 
-	auto res = U * x;
-	auto y = forwordSolve(L, b);
-	cout << "y:\n" << y << endl;
-	cout << "Ux:\n" << res << endl;
-
+	}*/
 	getchar();
 }
 

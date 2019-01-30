@@ -275,4 +275,17 @@ namespace dml {
 		}
 		return out;
 	}
+	template<int n, class TYPE>
+	void split(mat<n, n, TYPE> A, mat<n, n, TYPE> &L, mat<n, n, TYPE> &D, mat<n, n, TYPE> &U) {
+		for (int r = 0; r < A.numrows(); r++) {
+			for (int c = 0; c < A.numcols(); c++) {
+				if (r == c)
+					D[c][r] = A[c][r];
+				else if (r < c)
+					U[c][r] = A[c][r];
+				else if (r > c)
+					L[c][r] = A[c][r];
+			}
+		}
+	}
 }
