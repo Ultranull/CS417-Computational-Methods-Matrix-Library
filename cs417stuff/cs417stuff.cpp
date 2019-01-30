@@ -24,21 +24,11 @@ int main() {
 	mat4 A = singularMatrix<N, N, double>(min, max, 1,true);
 	vec4 b = randomVector<N, double>(min, max,true);
 	{
-		mat4 L, D, U;
-		split(A, L, D, U);
-		auto out = L + D + U;
-		cout << A << endl << out << endl;
-		cout << endl << endl;
-
-		mat4 Dinv = 1. / D;//make its column vec
-		mat4 LU = L + U;
-		vec4 xold= randomVector<N, double>(min, max, true), xnew;
-		int iters = 1;
-		for (int i = 0; i < iters; i++) {
-			xnew = Dinv * (b - LU * xold);
-			xold = xnew;
-		}
-		cout << b << endl << xnew << endl;
+		auto x = GaussianElimination(A, b);
+		auto xnew = JacobiIterative(A, b, randomVector<N, double>(min, max, true),100);
+		auto twoNorm = A*xnew-b;
+		cout << x << endl << xnew << endl;
+		cout << norm(twoNorm) << endl;
 	}
 	/*{
 		auto x = GaussianElimination(A, b);

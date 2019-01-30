@@ -83,6 +83,16 @@ namespace dml {
 		}
 		return out;
 	}
+
+	template<size_t rows,class TYPE>
+	TYPE norm(mat<1, rows, TYPE> v) {
+		TYPE sum = TYPE();
+		for (int i = 0; i < rows; i++) {
+			sum += v[0][i] * v[0][i];
+		}
+		return sqrt(sum);
+	}
+
 	template <size_t cols, size_t rows, size_t cols2, class TYPE>
 	mat<cols2, rows, TYPE> operator*(mat<cols, rows, TYPE> a, mat<cols2, cols, TYPE> b) {
 		mat<cols2, rows, TYPE> out;
@@ -138,8 +148,12 @@ namespace dml {
 	mat<cols, rows, TYPE> operator/(TYPE s,mat<cols, rows, TYPE> a) {
 		mat<cols, rows, TYPE> out;
 		for (int i = 0; i < rows; i++)
-			for (int j = 0; j < cols; j++)
-				out.data[j][i] = s/a.data[j][i];
+			for (int j = 0; j < cols; j++) {
+				if(a.data[j][i]==0)
+					out.data[j][i] = 0;
+				else
+					out.data[j][i] = s / a.data[j][i];
+			}
 		return out;
 	}
 
@@ -305,5 +319,17 @@ namespace dml {
 					L[c][r] = A[c][r];
 			}
 		}
+	}
+	template<int n, class TYPE>
+	mat<1, n, TYPE> JacobiIterative(mat<n, n, TYPE> A, mat<1, n, TYPE> b, mat<1, n, TYPE> guess, int iters = 100) {
+		mat<n, n, TYPE> L, D, U;
+		split(A, L, D, U);
+		mat<n, n, TYPE> Dinv = 1. / D, LU = L + U;
+		mat<1, n, TYPE> xold = guess, xnew;
+		for (int i = 0; i < iters; i++) {
+			xnew = Dinv * (b - LU * xold);
+			xold = xnew;
+		}
+		return xold;
 	}
 }
