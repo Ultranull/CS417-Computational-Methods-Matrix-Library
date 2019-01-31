@@ -332,4 +332,19 @@ namespace dml {
 		}
 		return xold;
 	}
+	template<int n, class TYPE>
+		mat<1, n, TYPE> JacobiIterative(mat<n, n, TYPE> A, mat<1, n, TYPE> b, mat<1, n, TYPE> guess,vector<double> &twoN,int errordiv,int iters = 100) {
+		mat<n, n, TYPE> L, D, U;
+		split(A, L, D, U);
+		mat<n, n, TYPE> Dinv = 1. / D, LU = L + U;
+		mat<1, n, TYPE> xold = guess, xnew;
+		for (int i = 0; i < iters; i++) {
+			xnew = Dinv * (b - LU * xold);
+			xold = xnew;
+			if (i%errordiv == 0)
+				twoN.push_back(norm(A * xold - b));
+		}
+		twoN.push_back(norm(A * xold - b));
+		return xold;
+	}
 }
