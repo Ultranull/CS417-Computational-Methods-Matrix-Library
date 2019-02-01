@@ -21,7 +21,7 @@ int main() {
 	typedef mat<N, N, double> mat4;
 	typedef mat<1, N, double> vec4;
 
-	mat4 A = singularMatrix<N, N, double>(min, max, 1, true);
+	mat4 A = nonsingularMatrix<N, N, double>(min, max, 1, true);
 	vec4 b = randomVector<N, double>(min, max, true);
 
 	auto x = GaussianElimination(A, b);

@@ -271,7 +271,7 @@ namespace dml {
 		}
 	}
 	template<int cols, int rows, class TYPE>
-	mat<cols, rows, TYPE> singularMatrix(TYPE min,TYPE max,int n = 1,bool rounded=false) {
+	mat<cols, rows, TYPE> nonsingularMatrix(TYPE min,TYPE max,int n = 1,bool rounded=false) {
 		default_random_engine gen(time(NULL));
 		uniform_real_distribution<TYPE> dist(min,max);
 		mat<cols, rows, TYPE> out;
