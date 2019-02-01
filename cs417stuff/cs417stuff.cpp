@@ -51,15 +51,16 @@ int main() {
 	cout << "y:\n" << y << endl;
 	cout << "Ux:\n" << res << endl;
 
-	for (int i = 0; i < 10; i++) {
+	for (int i = 0; i < 100; i++) {
 		mat4 At = nonsingularMatrix<N, N, double>(gen, min, max, 1, true);
 		vec4 bt = randomVector<N, double>(gen, min, max, true);
 		vector<double> error;
-		auto xnew = JacobiIterative(At, bt, randomVector<N, double>(gen, min, max, true), error, 1, 400);
+		auto xnew = JacobiIterative(At, bt, randomVector<N, double>(gen, min, max, true),error,1, 1000);
 		auto twoNorm = At * xnew - bt;
-		cout << norm(twoNorm) << endl;
-		cout << error.size() << endl<<endl;
+		if(norm(twoNorm)==0)
+			cout << error.size() << endl<<endl;
 	}
+
 	getchar();
 }
 
