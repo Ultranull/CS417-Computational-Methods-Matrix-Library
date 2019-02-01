@@ -15,14 +15,15 @@ using namespace dml;
 
 
 int main() {
-	const size_t N = 8;
+	const size_t N = 4;
 	double min = 0, max = 100;
+	default_random_engine gen(time(NULL));
 
 	typedef mat<N, N, double> mat4;
 	typedef mat<1, N, double> vec4;
 
-	mat4 A = nonsingularMatrix<N, N, double>(min, max, 1, true);
-	vec4 b = randomVector<N, double>(min, max, true);
+	mat4 A = nonsingularMatrix<N, N, double>(gen,min, max, 1, true);
+	vec4 b = randomVector<N, double>(gen, min, max, true);
 
 	auto x = GaussianElimination(A, b);
 	auto z = A * x;
@@ -50,16 +51,15 @@ int main() {
 	cout << "y:\n" << y << endl;
 	cout << "Ux:\n" << res << endl;
 
-	vector<double> error;
-	auto xnew = JacobiIterative(A, b, randomVector<N, double>(min, max, true),error,1, 100);
-	auto twoNorm = A * xnew - b;
-	cout << x << endl << xnew << endl;
-	cout << norm(twoNorm) << endl<<endl;
-
-	for (int i = 0; i < error.size(); i++) {
-		cout << error[i] << endl;
+	for (int i = 0; i < 10; i++) {
+		mat4 At = nonsingularMatrix<N, N, double>(gen, min, max, 1, true);
+		vec4 bt = randomVector<N, double>(gen, min, max, true);
+		vector<double> error;
+		auto xnew = JacobiIterative(At, bt, randomVector<N, double>(gen, min, max, true), error, 1, 400);
+		auto twoNorm = At * xnew - bt;
+		cout << norm(twoNorm) << endl;
+		cout << error.size() << endl<<endl;
 	}
-
 	getchar();
 }
 

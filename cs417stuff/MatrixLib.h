@@ -193,6 +193,7 @@ namespace dml {
 			swapROW(A, ind, k);
 			swapROW(b, ind, k);
 
+
 			TYPE Ak = A(k);
 			auto rowk = A.row(k);
 			rowk = rowk / Ak;
@@ -271,8 +272,7 @@ namespace dml {
 		}
 	}
 	template<int cols, int rows, class TYPE>
-	mat<cols, rows, TYPE> nonsingularMatrix(TYPE min,TYPE max,int n = 1,bool rounded=false) {
-		default_random_engine gen(time(NULL));
+	mat<cols, rows, TYPE> nonsingularMatrix(default_random_engine &gen,TYPE min,TYPE max,int n = 1,bool rounded=false) {
 		uniform_real_distribution<TYPE> dist(min,max);
 		mat<cols, rows, TYPE> out;
 
@@ -295,8 +295,7 @@ namespace dml {
 		return out;
 	}
 	template<int rows, class TYPE>
-	mat<1, rows, TYPE> randomVector(TYPE min, TYPE max, bool rounded = false) {
-		default_random_engine gen(time(NULL));
+	mat<1, rows, TYPE> randomVector(default_random_engine &gen,TYPE min, TYPE max, bool rounded = false) {
 		uniform_real_distribution<TYPE> dist(min, max);
 		mat<1, rows, TYPE> out;
 		for (int i = 0; i < rows; i++) {
@@ -340,6 +339,10 @@ namespace dml {
 		mat<1, n, TYPE> xold = guess, xnew;
 		for (int i = 0; i < iters; i++) {
 			xnew = Dinv * (b - LU * xold);
+			if (abs(norm(xnew)-norm(xold))<=pow(10,-50)){
+				xold = xnew;
+				break;
+			}
 			xold = xnew;
 			if (i%errordiv == 0)
 				twoN.push_back(norm(A * xold - b));
