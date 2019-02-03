@@ -375,4 +375,25 @@ namespace dml {
 		twoN.push_back(norm(A * xold - b));
 		return xold;
 	}
+	template<int n, class TYPE>
+	mat<1, n, TYPE> GaussSeidel(mat<n, n, TYPE> A, mat<1, n, TYPE> b, mat<1, n, TYPE> guess, int iters = 100) {
+		mat<n, n, TYPE> L, D, U;
+		split(A, L, D, U);
+		mat<n, n, TYPE> Dinv = 1. / D, LU = L + U;
+		mat<1, n, TYPE> xold = guess, xnew;
+		unsigned int c = 0;
+		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && c < iters) {
+			xnew = xold;
+			for (int i = 0; i < n; i++) {
+				TYPE theta = 0;
+				for (int j = 0; j < n; j++) {
+					if (j != i)
+						theta = theta + A[j][i] * xold[0][j];
+				}
+				xold[0][i] = (1 / A[i][i])*(b[0][i] - theta);
+			}
+			c++;
+		}
+		return xold;
+	}
 }

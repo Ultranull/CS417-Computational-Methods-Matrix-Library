@@ -12,7 +12,24 @@
 using namespace std;
 using namespace dml;
 
+int menu() {
+	int option;
+	cout << "  Menu\n";
 
+	cin >> option;
+	return option;
+}
+void interactiveMenu() {
+
+	int option = -1;
+	while (option != 0) {
+		option = menu();
+		switch (option){
+		case 1: {}break;
+
+		}
+	}
+}
 
 int main() {
 	const size_t N = 4;
@@ -55,7 +72,7 @@ int main() {
 		mat4 At = nonsingularMatrix<N, N, double>(gen, min, max, 1, true);
 		vec4 bt = randomVector<N, double>(gen, min, max, true);
 		vector<double> error;
-		auto xnew = JacobiIterative(At, bt, randomVector<N, double>(gen, min, max, true),error,1, 1000);
+		auto xnew = GaussSeidel(At, bt, randomVector<N, double>(gen, min, max, true),error,1, 1000);
 		auto twoNorm = At * xnew - bt;
 		if(norm(twoNorm)==0)
 			cout << error.size() << endl<<endl;
