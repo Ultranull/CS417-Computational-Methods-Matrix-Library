@@ -16,7 +16,8 @@ namespace dml {
 			data = vector<vector<double>>(cols,
 				vector<double>(rows,t));
 		}
-		mat() :mat(0,4,4) {}
+		mat(){}
+		mat(int cols,int rows):mat(0,cols,rows){}
 		mat(const mat &m) {
 			this->data = m.data;
 		}
@@ -213,6 +214,8 @@ namespace dml {
 		int i, j, k;
 		double sum = 0;
 		int n=A.rows();
+		L = mat(n, n);
+		U = mat(n, n);
 		for (i = 0; i < n; i++) {
 			U[i][i] = 1;
 		}
@@ -235,7 +238,12 @@ namespace dml {
 			}
 		}
 	}
-
+	mat LUDecomposition(mat A, mat b) {
+		mat L, U;
+		decomposeMatrix(A, L, U);
+		mat y = forwordSolve(L, b);;
+		return backSolve(U, y);
+	}
 	mat nonsingularMatrix(default_random_engine &gen,double min,double max,int n = 4,bool rounded=false) {
 		uniform_real_distribution<double> dist(min,max);
 		mat out(0,n,n);
@@ -271,6 +279,10 @@ namespace dml {
 	}
 
 	void split(mat A, mat &L, mat &D, mat &U) {
+		int n = A.cols();
+		L = mat(n, n);
+		U = mat(n, n);
+		D = mat(n, n);
 		for (int r = 0; r < A.rows(); r++) {
 			for (int c = 0; c < A.cols(); c++) {
 				if (r == c)
@@ -284,10 +296,11 @@ namespace dml {
 	}
 
 	mat JacobiIterative(mat A, mat b, mat guess, int iters = 100) {
-		mat L, D, U;
+		int N = A.cols();
+		mat L(N, N), D(N, N), U(N, N);
 		split(A, L, D, U);
 		mat Dinv = 1. / D, LU = L + U;
-		mat xold = guess, xnew;
+		mat xold = guess, xnew(1, A.rows());
 		unsigned int i = 0;
 		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && i < iters) {
 			xold = xnew;
@@ -301,7 +314,7 @@ namespace dml {
 		mat L, D, U;
 		split(A, L, D, U);
 		mat Dinv = 1. / D, LU = L + U;
-		mat xold = guess, xnew;
+		mat xold = guess, xnew(1,A.rows());
 		unsigned int i = 0;
 		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && i<iters) {
 			xold = xnew;
@@ -316,11 +329,11 @@ namespace dml {
 
 
 	mat GaussSeidel(mat A, mat b, mat guess, vector<double> &twoN, int errordiv, int iters = 100) {
+		int n = A.cols();
 		mat L, D, U;
 		split(A, L, D, U);
-		int n = A.cols();
 		mat Dinv = 1. / D, LU = L + U;
-		mat xold = guess, xnew(0,1,n);
+		mat xold = guess, xnew(0, 1, n);
 		unsigned int c = 0;
 		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && c < iters) {
 			xnew = xold;
@@ -341,9 +354,9 @@ namespace dml {
 	}
 
 	mat GaussSeidel(mat A, mat b, mat guess, int iters = 100) {
+		int n = A.cols();
 		mat L, D, U;
 		split(A, L, D, U);
-		int n = A.cols();
 		mat Dinv = 1. / D, LU = L + U;
 		mat xold = guess, xnew(0, 1, n);
 		unsigned int c = 0;
