@@ -36,11 +36,8 @@ int main() {
 	double min = 0, max = 100;
 	default_random_engine gen(time(NULL));
 
-	typedef mat<N, N, double> mat4;
-	typedef mat<1, N, double> vec4;
-
-	mat4 A = nonsingularMatrix<N, N, double>(gen,min, max, 1, true);
-	vec4 b = randomVector<N, double>(gen, min, max, true);
+	mat A = nonsingularMatrix(gen,min, max, N, true);
+	mat b = randomVector(gen, min, max,N, true);
 
 	auto x = GaussianElimination(A, b);
 	auto z = A * x;
@@ -49,7 +46,7 @@ int main() {
 	cout << "Ax:\n";
 	cout << z << endl;
 
-	mat4 L, U;
+	mat L, U;
 	decomposeMatrix(A, L, U);
 
 	cout << "L:\n";
@@ -69,10 +66,10 @@ int main() {
 	cout << "Ux:\n" << res << endl;
 
 	for (int i = 0; i < 100; i++) {
-		mat4 At = nonsingularMatrix<N, N, double>(gen, min, max, 1, true);
-		vec4 bt = randomVector<N, double>(gen, min, max, true);
+		mat At = nonsingularMatrix(gen, min, max, N, true);
+		mat bt = randomVector(gen, min, max,N, true);
 		vector<double> error;
-		auto xnew = GaussSeidel(At, bt, randomVector<N, double>(gen, min, max, true),error,1, 1000);
+		auto xnew = GaussSeidel(At, bt, randomVector(gen, min, max,N, true),error,1, 1000);
 		auto twoNorm = At * xnew - bt;
 		if(norm(twoNorm)==0)
 			cout << error.size() << endl<<endl;
