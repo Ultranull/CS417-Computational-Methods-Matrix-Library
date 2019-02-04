@@ -84,55 +84,61 @@ void interactiveMenu() {
 		}break;
 		}
 
+
 	}
 }
 
 int main() {
 	{
-		const size_t N = 4;
-		double min = 0, max = 100;
-		default_random_engine gen(time(NULL));
+	//	const size_t N = 4;
+	//	double min = 0, max = 100;
+	//	default_random_engine gen(time(NULL));
+	//	/*
+	//	mat A = nonsingularMatrix(gen, min, max, N, true);
+	//	mat b = randomVector(gen, min, max, N, true);
 
-		mat A = nonsingularMatrix(gen, min, max, N, true);
-		mat b = randomVector(gen, min, max, N, true);
+	//	auto x = GaussianElimination(A, b);
+	//	auto z = A * x;
+	//	cout << "b:\n";
+	//	cout << b << endl;
+	//	cout << "Ax:\n";
+	//	cout << z << endl;
 
-		auto x = GaussianElimination(A, b);
-		auto z = A * x;
-		cout << "b:\n";
-		cout << b << endl;
-		cout << "Ax:\n";
-		cout << z << endl;
+	//	mat L, U;
+	//	decomposeMatrix(A, L, U);
 
-		mat L, U;
-		decomposeMatrix(A, L, U);
+	//	cout << "L:\n";
+	//	cout << L << endl;
+	//	cout << "U:\n";
+	//	cout << U << endl;
 
-		cout << "L:\n";
-		cout << L << endl;
-		cout << "U:\n";
-		cout << U << endl;
+	//	mat out = L * U;
+	//	cout << "A:\n";
+	//	cout << A << endl;
+	//	cout << "LU:\n";
+	//	cout << out << endl;
 
-		mat out = L * U;
-		cout << "A:\n";
-		cout << A << endl;
-		cout << "LU:\n";
-		cout << out << endl;
+	//	mat res = U * x;
+	//	mat y = forwordSolve(L, b);
+	//	cout << "y:\n" << y << endl;
+	//	cout << "Ux:\n" << res << endl;*/
 
-		mat res = U * x;
-		mat y = forwordSolve(L, b);
-		cout << "y:\n" << y << endl;
-		cout << "Ux:\n" << res << endl;
-
-		for (int i = 0; i < 100; i++) {
-			mat At = nonsingularMatrix(gen, min, max, N, true);
-			mat bt = randomVector(gen, min, max, N, true);
-			vector<double> error;
-			mat xnew = GaussSeidel(At, bt, randomVector(gen, min, max, N, true), error, 1, 100);
-			mat twoNorm = At * xnew - bt;
-			if (norm(twoNorm) == 0)
-				cout <<i<<" "<<error.size() << endl << endl;
-		}
+	//	for (int i = 0; i < 100; i++) {
+	//		mat At = nonsingularMatrix(gen, min, max, N, true);
+	//		mat bt = randomVector(gen, min, max, N, true);
+	//		vector<double> error;
+	//		mat xnew = JacobiIterative(At, bt, bt, error, 1, 100);
+	//		mat twoNorm = At * xnew - bt;
+	//		cout << "jacobi: " <<error.size()<<" 2norm: "<<norm(twoNorm) << endl;
+	//		error.clear();
+	//		xnew = GaussSeidel(At, bt, bt, error, 1, 100);
+	//		twoNorm = At * xnew - bt;
+	//		cout <<"guass-siedel: "<< error.size() << " 2norm: " << norm(twoNorm) << endl << endl;
+	//	}
 	}
 	//interactiveMenu();
+
+	cout << "done!\n";
 	getchar();
 }
 
