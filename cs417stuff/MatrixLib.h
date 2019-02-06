@@ -367,11 +367,10 @@ namespace dml {
 	}
 	mat SOR(mat A, mat b, mat guess,double con, vector<double> &twoN, int errordiv, int iters = 100) {
 		int n = A.cols();
-		mat xold = guess, xnew(1, 1, n), corr(0, 1, n);
+		mat xold = guess, xnew(0, 1, n);
 		unsigned int c = 0;
 		double omega=0;
 		while (abs(norm(xnew) - norm(xold)) > pow(10, -50)&&c < iters) {
-			corr = xnew - xold;
 			xnew = xold;
 			for (int i = 0; i < n; i++) {
 				double theta = 0;
@@ -379,13 +378,13 @@ namespace dml {
 					if (j != i)
 						theta = theta + A[j][i] * xold[0][j];
 				}
-				omega = con*corr[0][i];
+				omega = con;
 				xold[0][i] = (1. - omega)*xold[0][i]+(omega / A[i][i])*(b[0][i] - theta);
 			}
 			if (c%errordiv == 0)
-				twoN.push_back(norm(A * xnew - b));
+				twoN.push_back(norm(A * xold - b));
 			c++;
 		}
-		return xnew;
+		return xold;
 	}
 }
