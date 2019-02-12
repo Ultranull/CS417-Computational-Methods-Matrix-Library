@@ -137,8 +137,8 @@ void interactiveMenu() {
 }
 
 int main() {
-	{
-		/*const size_t N = 4;
+	if(0){
+		const size_t N = 4;
 		double min = 0, max = 100;
 		default_random_engine gen(time(NULL));
 		
@@ -171,7 +171,10 @@ int main() {
 		cout << "y:\n" << y << endl;
 		cout << "Ux:\n" << res << endl;
 
-		for (int i = 0; i < 100; i++) {
+
+
+
+		/*for (int i = 0; i < 100; i++) {
 			mat At = nonsingularMatrix(gen, min, max, N, true);
 			mat bt = randomVector(gen, min, max, N, true);
 			vector<double> error;
@@ -184,7 +187,31 @@ int main() {
 			cout <<"guass-siedel: "<< error.size() << " 2norm: " << norm(twoNorm) << endl << endl;
 		}*/
 	}
-	interactiveMenu();
+	//interactiveMenu();
+	mat b(-4,1,2);
+
+	mat A({
+		{6,-1},
+		{2,3},
+		});
+
+	mat bk = b;
+	double mu= 0., mu0=1.,epsilon=pow(10,-5);
+	int k;
+	for (k = 0; k<100&& abs(mu - mu0) >= epsilon; k++) {
+		bk = bk / norm(bk);
+		mat bk1 = A * bk;
+		mu0 = mu;
+		mu = (bk.transpose()*bk1)();
+		bk = bk1;
+	}
+	cout << A << endl;
+	cout << "k: "<<k<<" mu: " << mu << " b: \n" << bk<<endl;
+
+	mat Al = A * bk,lv=mu*bk;
+
+	cout << Al << endl << lv << endl;
+
 	cout << "done!\n";
 	getchar();
 }

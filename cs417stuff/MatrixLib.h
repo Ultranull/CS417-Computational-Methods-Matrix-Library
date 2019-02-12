@@ -43,7 +43,7 @@ namespace dml {
 			return out;
 		}
 		mat transpose() {
-			mat out(0,cols(),rows());
+			mat out(0,rows(), cols());
 			for (int r = 0; r < rows(); r++)
 				for (int c = 0; c < cols(); c++)
 						out.data[r][c] = data[c][r];
