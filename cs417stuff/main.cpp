@@ -137,28 +137,27 @@ void interactiveMenu() {
 }
 
 int main() {
-	if(0){
-		const size_t N = 4;
+	{
+		/*const size_t N = 4;
 		double min = 0, max = 100;
 		default_random_engine gen(time(NULL));
 		
 		mat A = nonsingularMatrix(gen, min, max, N, true);
 		mat b = randomVector(gen, min, max, N, true);
 
-		auto x = GaussianElimination(A, b);
-		auto z = A * x;
-		cout << "b:\n";
-		cout << b << endl;
-		cout << "Ax:\n";
-		cout << z << endl;
+		//mat L, U;
+		//decomposeMatrix(A, L, U);
 
-		mat L, U;
-		decomposeMatrix(A, L, U);
+		//cout << "L:\n";
+		//cout << L << endl;
+		//cout << "U:\n";
+		//cout << U << endl;
 
-		cout << "L:\n";
-		cout << L << endl;
-		cout << "U:\n";
-		cout << U << endl;
+		//mat out = L * U;
+		//cout << "A:\n";
+		//cout << A << endl;
+		//cout << "LU:\n";
+		//cout << out << endl;
 
 		mat out = L * U;
 		cout << "A:\n";
@@ -171,10 +170,7 @@ int main() {
 		cout << "y:\n" << y << endl;
 		cout << "Ux:\n" << res << endl;
 
-
-
-
-		/*for (int i = 0; i < 100; i++) {
+		for (int i = 0; i < 100; i++) {
 			mat At = nonsingularMatrix(gen, min, max, N, true);
 			mat bt = randomVector(gen, min, max, N, true);
 			vector<double> error;
