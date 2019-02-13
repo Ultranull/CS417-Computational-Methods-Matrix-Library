@@ -43,7 +43,7 @@ namespace dml {
 			return out;
 		}
 		mat transpose() {
-			mat out(0,cols(),rows());
+			mat out(0,rows(), cols());
 			for (int r = 0; r < rows(); r++)
 				for (int c = 0; c < cols(); c++)
 						out.data[r][c] = data[c][r];
@@ -386,5 +386,47 @@ namespace dml {
 			c++;
 		}
 		return xold;
+	}
+	void PowerIteration(mat A, double &eiganval, mat &eiganvector) {
+		double mu = 0., mu0 = 1., epsilon = pow(10, -5);
+		int k;
+		mat bk(1, 1, A.rows());
+		for (k = 0; k < 100 && abs(mu - mu0) >= epsilon; k++) {
+			bk = bk / norm(bk);
+			mat bk1 = A * bk;
+			mu0 = mu;
+			mu = (bk.transpose()*bk1)();
+			bk = bk1;
+		}
+		eiganvector = bk;
+		eiganval = mu;
+	}
+	double fx(mat f, double x) {
+		double out = 0;
+		for (int i = 0; i < f.cols(); i++)
+			out += f[i][0] * pow(x, i);
+		return out;
+	}
+	double dfdx(mat f, double x) {
+		double out = 0;
+		for (int i = 0; i < f.cols(); i++)
+			out += i * f[i][0] * pow(x, i - 1);
+		return out;
+	}
+
+	double NewtonsMethod(mat f, double guess = 1., int max = 100, double epsilon = -15) {
+		if (f.cols() == 1) {
+			cout << "Newton's Method must be given a row vector!\n";
+			return 0;
+		}
+		double x0 = guess, xnew, error = abs(fx(f, x0)), tol = pow(10, epsilon);
+		int ct = 0;
+		while (error > tol&&ct < max) {
+			xnew = x0 - (fx(f, x0) / dfdx(f, x0));
+			error = abs(fx(f, xnew));
+			x0 = xnew;
+			ct++;
+		}
+		return xnew;
 	}
 }
