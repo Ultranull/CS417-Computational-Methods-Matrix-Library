@@ -401,4 +401,32 @@ namespace dml {
 		eiganvector = bk;
 		eiganval = mu;
 	}
+	double fx(mat f, double x) {
+		double out = 0;
+		for (int i = 0; i < f.cols(); i++)
+			out += f[i][0] * pow(x, i);
+		return out;
+	}
+	double dfdx(mat f, double x) {
+		double out = 0;
+		for (int i = 0; i < f.cols(); i++)
+			out += i * f[i][0] * pow(x, i - 1);
+		return out;
+	}
+
+	double NewtonsMethod(mat f, double guess = 1., int max = 100, double epsilon = -15) {
+		if (f.cols() == 1) {
+			cout << "Newton's Method must be given a row vector!\n";
+			return 0;
+		}
+		double x0 = guess, xnew, error = abs(fx(f, x0)), tol = pow(10, epsilon);
+		int ct = 0;
+		while (error > tol&&ct < max) {
+			xnew = x0 - (fx(f, x0) / dfdx(f, x0));
+			error = abs(fx(f, xnew));
+			x0 = xnew;
+			ct++;
+		}
+		return xnew;
+	}
 }
