@@ -387,4 +387,18 @@ namespace dml {
 		}
 		return xold;
 	}
+	void PowerIteration(mat A, double &eiganval, mat &eiganvector) {
+		double mu = 0., mu0 = 1., epsilon = pow(10, -5);
+		int k;
+		mat bk(1, 1, A.rows());
+		for (k = 0; k < 100 && abs(mu - mu0) >= epsilon; k++) {
+			bk = bk / norm(bk);
+			mat bk1 = A * bk;
+			mu0 = mu;
+			mu = (bk.transpose()*bk1)();
+			bk = bk1;
+		}
+		eiganvector = bk;
+		eiganval = mu;
+	}
 }

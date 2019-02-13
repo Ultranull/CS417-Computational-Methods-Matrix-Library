@@ -136,41 +136,55 @@ void interactiveMenu() {
 	}
 }
 
+
+double fx(mat f,double x) {
+	double out = 0;
+	for (int i = 0; i < f.cols(); i++)
+		out += f[i][0] * pow(x, i);
+	return out;
+}
+double dfdx(mat f, double x) {
+	double out = 0;
+	for (int i = 0; i < f.cols(); i++)
+		out += i*f[i][0] * pow(x, i-1);
+	return out;
+}
+
+double NewtonsMethod(mat f,double guess = 1.,int max=100,double epsilon=-15) {
+	if (f.cols() == 1) {
+		cout << "Newton's Method must be given a row vector!\n";
+		return 0;
+	}
+	double x0= guess, xnew, error = abs(fx(f, x0)), tol = pow(10, epsilon);
+	int ct = 0;
+	while (error > tol&&ct<max) {
+		xnew = x0 - (fx(f, x0) / dfdx(f, x0));
+		error = abs(fx(f, xnew));
+		x0 = xnew;
+		ct++;
+	}
+	return xnew;
+}
+
 int main() {
+	const size_t N = 2;
+	double min = 0, max = 10;
+	default_random_engine gen(time(NULL));
 	{
-		/*const size_t N = 4;
-		double min = 0, max = 100;
-		default_random_engine gen(time(NULL));
 		
 		mat A = nonsingularMatrix(gen, min, max, N, true);
 		mat b = randomVector(gen, min, max, N, true);
 
-		//mat L, U;
-		//decomposeMatrix(A, L, U);
 
-		//cout << "L:\n";
-		//cout << L << endl;
-		//cout << "U:\n";
-		//cout << U << endl;
+		mat bk;
+		double mu;
 
-		//mat out = L * U;
-		//cout << "A:\n";
-		//cout << A << endl;
-		//cout << "LU:\n";
-		//cout << out << endl;
+		PowerIteration(A, mu, bk);
 
-		mat out = L * U;
-		cout << "A:\n";
-		cout << A << endl;
-		cout << "LU:\n";
-		cout << out << endl;
+		mat Al = A * bk, lv = mu * bk;
+		cout << norm(Al) << endl << norm(lv) << endl;
 
-		mat res = U * x;
-		mat y = forwordSolve(L, b);
-		cout << "y:\n" << y << endl;
-		cout << "Ux:\n" << res << endl;
-
-		for (int i = 0; i < 100; i++) {
+		/*for (int i = 0; i < 100; i++) {
 			mat At = nonsingularMatrix(gen, min, max, N, true);
 			mat bt = randomVector(gen, min, max, N, true);
 			vector<double> error;
@@ -184,29 +198,12 @@ int main() {
 		}*/
 	}
 	//interactiveMenu();
-	mat b(-4,1,2);
 
-	mat A({
-		{6,-1},
-		{2,3},
-		});
+	mat f = randomVector(gen, min, max, 100, true).transpose();
 
-	mat bk = b;
-	double mu= 0., mu0=1.,epsilon=pow(10,-5);
-	int k;
-	for (k = 0; k<100&& abs(mu - mu0) >= epsilon; k++) {
-		bk = bk / norm(bk);
-		mat bk1 = A * bk;
-		mu0 = mu;
-		mu = (bk.transpose()*bk1)();
-		bk = bk1;
-	}
-	cout << A << endl;
-	cout << "k: "<<k<<" mu: " << mu << " b: \n" << bk<<endl;
-
-	mat Al = A * bk,lv=mu*bk;
-
-	cout << Al << endl << lv << endl;
+	double x = NewtonsMethod(f);
+	cout << x <<endl;
+	cout << abs(fx(f, x)) << endl;
 
 	cout << "done!\n";
 	getchar();
