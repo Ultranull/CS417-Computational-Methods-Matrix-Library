@@ -60,6 +60,9 @@ int menu() {
 	cout << "5. Solve current matrix using LU decomposition\n";
 	cout << "6. Solve current matrix with Jacobi's iterative method\n";
 	cout << "7. Solve current matrix with Gauss-Seidel method\n";
+	cout << "8. Solve current matrix with SOR method\n";
+	cout << "9. Find EiganVector and EiganValue using power iteration\n";
+	cout << "10. Find a root to polynomial using newtons method\n";
 	//cout << "9. Save current solution vector x to file\n";
 	//cout << "10. Graph current solution vector x using GNUPLOT\n";
 	cout << "13. display A and b\n";
@@ -71,7 +74,8 @@ int menu() {
 void interactiveMenu() {
 	default_random_engine gen(time(NULL)); 
 	high_resolution_clock::time_point t1,t2;
-	mat A, b,L,U,D,x;
+	mat A, b,L,U,D,x,eiganvec;
+	float eiganVal;
 	int option = -1;
 	while (option != 0) {
 		option = menu();
@@ -123,6 +127,16 @@ void interactiveMenu() {
 			cin >> iters;
 			t1 = high_resolution_clock::now();
 			x = GaussSeidel(A, b, b, iters);
+			cout << "\nx:\n" << x;
+			cout << "2-norm: " << norm(A * x - b) << endl;
+			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
+		}break;
+		case 9: {
+			int iters;
+			cout << "number of iterations?: ";
+			cin >> iters;
+			t1 = high_resolution_clock::now();
+			x = SOR(A, b, b, iters);
 			cout << "\nx:\n" << x;
 			cout << "2-norm: " << norm(A * x - b) << endl;
 			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";

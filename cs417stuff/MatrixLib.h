@@ -299,7 +299,7 @@ namespace dml {
 		mat L(N, N), D(N, N), U(N, N);
 		split(A, L, D, U);
 		mat Dinv = 1. / D, LU = L + U;
-		mat xold = guess, xnew(1, A.rows());
+		mat xnew = guess, xold(1, A.rows());
 		unsigned int i = 0;
 		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && i < iters) {
 			xold = xnew;
@@ -313,7 +313,7 @@ namespace dml {
 		mat L, D, U;
 		split(A, L, D, U);
 		mat Dinv = 1. / D, LU = L + U;
-		mat xold = guess, xnew(1,A.rows());
+		mat xnew = guess, xold(1,A.rows());
 		unsigned int i = 0;
 		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && i<iters) {
 			xold = xnew;
@@ -328,7 +328,7 @@ namespace dml {
 
 	mat GaussSeidel(mat A, mat b, mat guess, vector<double> &twoN, int errordiv, int iters = 100) {
 		int n = A.cols();
-		mat xold = guess, xnew(0, 1, n);
+		mat xnew = guess, xold(0, 1, n);
 		unsigned int c = 0;
 		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && c < iters) {
 			xnew = xold;
@@ -349,7 +349,7 @@ namespace dml {
 
 	mat GaussSeidel(mat A, mat b, mat guess, int iters = 100) {
 		int n = A.cols();
-		mat xold = guess, xnew(0, 1, n);
+		mat xnew = guess, xold(0, 1, n);
 		unsigned int c = 0;
 		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && c < iters) {
 			xnew = xold;
@@ -367,7 +367,7 @@ namespace dml {
 	}
 	mat SOR(mat A, mat b, mat guess,double con, vector<double> &twoN, int errordiv, int iters = 100) {
 		int n = A.cols();
-		mat xold = guess, xnew(0, 1, n);
+		mat xnew = guess, xold(0, 1, n);
 		unsigned int c = 0;
 		double omega=0;
 		while (abs(norm(xnew) - norm(xold)) > pow(10, -50)&&c < iters) {
@@ -383,6 +383,26 @@ namespace dml {
 			}
 			if (c%errordiv == 0)
 				twoN.push_back(norm(A * xold - b));
+			c++;
+		}
+		return xold;
+	}
+	mat SOR(mat A, mat b, mat guess, double con, int iters = 100) {
+		int n = A.cols();
+		mat xnew = guess, xold(0, 1, n);
+		unsigned int c = 0;
+		double omega = 0;
+		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && c < iters) {
+			xnew = xold;
+			for (int i = 0; i < n; i++) {
+				double theta = 0;
+				for (int j = 0; j < n; j++) {
+					if (j != i)
+						theta = theta + A[j][i] * xold[0][j];
+				}
+				omega = con;
+				xold[0][i] = (1. - omega)*xold[0][i] + (omega / A[i][i])*(b[0][i] - theta);
+			}
 			c++;
 		}
 		return xold;
