@@ -301,7 +301,8 @@ namespace dml {
 		mat Dinv = 1. / D, LU = L + U;
 		mat xnew = guess, xold(1, A.rows());
 		unsigned int i = 0;
-		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && i < iters) {
+		double epsilon = pow(10, -20);
+		while (abs(norm(xnew) - norm(xold)) > epsilon && i < iters) {
 			xold = xnew;
 			xnew = Dinv * (b - LU * xold);
 			i++;
@@ -315,7 +316,8 @@ namespace dml {
 		mat Dinv = 1. / D, LU = L + U;
 		mat xnew = guess, xold(1,A.rows());
 		unsigned int i = 0;
-		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && i<iters) {
+		double epsilon = pow(10, -20);
+		while (abs(norm(xnew) - norm(xold)) > epsilon && i<iters) {
 			xold = xnew;
 			xnew = Dinv * (b - LU * xold);
 			if (i%errordiv == 0)
@@ -328,9 +330,10 @@ namespace dml {
 
 	mat GaussSeidel(mat A, mat b, mat guess, vector<double> &twoN, int errordiv, int iters = 100) {
 		int n = A.cols();
-		mat xnew = guess, xold(0, 1, n);
+		mat xold = guess, xnew(0, 1, n);
 		unsigned int c = 0;
-		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && c < iters) {
+		double epsilon = pow(10, -20);
+		while (abs(norm(xnew) - norm(xold)) > epsilon && c < iters) {
 			xnew = xold;
 			for (int i = 0; i < n; i++) {
 				double theta=0;
@@ -349,9 +352,10 @@ namespace dml {
 
 	mat GaussSeidel(mat A, mat b, mat guess, int iters = 100) {
 		int n = A.cols();
-		mat xnew = guess, xold(0, 1, n);
+		mat xold = guess, xnew(0, 1, n);
 		unsigned int c = 0;
-		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && c < iters) {
+		double epsilon = pow(10, -20);
+		while (abs(norm(xnew) - norm(xold)) > epsilon && c < iters) {
 			xnew = xold;
 			for (int i = 0; i < n; i++) {
 				double theta = 0;
@@ -367,10 +371,11 @@ namespace dml {
 	}
 	mat SOR(mat A, mat b, mat guess,double con, vector<double> &twoN, int errordiv, int iters = 100) {
 		int n = A.cols();
-		mat xnew = guess, xold(0, 1, n);
+		mat xold = guess, xnew(0, 1, n);
 		unsigned int c = 0;
 		double omega=0;
-		while (abs(norm(xnew) - norm(xold)) > pow(10, -50)&&c < iters) {
+		double epsilon = pow(10, -20);
+		while (abs(norm(xnew) - norm(xold)) > epsilon&&c < iters) {
 			xnew = xold;
 			for (int i = 0; i < n; i++) {
 				double theta = 0;
@@ -389,10 +394,11 @@ namespace dml {
 	}
 	mat SOR(mat A, mat b, mat guess, double con, int iters = 100) {
 		int n = A.cols();
-		mat xnew = guess, xold(0, 1, n);
+		mat xold = guess, xnew(0, 1, n);
 		unsigned int c = 0;
 		double omega = 0;
-		while (abs(norm(xnew) - norm(xold)) > pow(10, -50) && c < iters) {
+		double epsilon = pow(10, -20);
+		while (abs(norm(xnew) - norm(xold)) > epsilon && c < iters) {
 			xnew = xold;
 			for (int i = 0; i < n; i++) {
 				double theta = 0;
@@ -442,7 +448,8 @@ namespace dml {
 		double x0 = guess, xnew, error = abs(fx(f, x0)), tol = pow(10, epsilon);
 		int ct = 0;
 		while (error > tol&&ct < max) {
-			xnew = x0 - (fx(f, x0) / dfdx(f, x0));
+			double fxp = dfdx(f, x0);
+			xnew = x0 - (fx(f, x0) / fxp);
 			error = abs(fx(f, xnew));
 			x0 = xnew;
 			ct++;
