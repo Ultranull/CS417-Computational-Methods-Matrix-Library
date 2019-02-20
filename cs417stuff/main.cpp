@@ -153,21 +153,17 @@ void interactiveMenu() {
 			int n;
 			cout << "\nplease enter number of coefficeints: ";
 			cin >> n;
-			vector<double> arrf(n);
-			cout << "please enter coefficients from x^0 to x^n\n(ex: \'0 2.1 3\' -> \'3x^2+2.1x=0)\n";
+			vector<term> arrf(n);
+			cout << "for each term enter the coefficient then exponent \n(ex: \'1 2 -3 4\' -> \'1x^2-3x^4=0)\n";
 			for (int i = 0; i < n; i++)
-				cin >> arrf[i];
-			mat f(vector<vector<double>>(1, arrf));
+				cin >> arrf[i].c >> arrf[i].e;
+			polynomial f(arrf);
 			double guess;
 			cout << "please enter a guess for the root: ";
 			cin >> guess;
 			double root = NewtonsMethod(f,guess);
-			cout << endl;
-			for (int i = n - 1; i >= 0; i--)
-				if(i==0)cout << arrf[i];
-				else if (i == 1)cout << arrf[i] << "x" << (arrf[i-1] >= 0 ? (" +") : " ");
-				else cout << arrf[i] << "x^" << i << (arrf[i-1] >= 0 ? (" +") : "");
-			cout << " = 0\n where x = " << root<<endl;
+			cout <<f<<endl;
+			cout << "where x = " << root<<endl;
 		}break;
 		case 13: {
 			cout << "\nA: \n" << A << "b:\n" << b << endl;
@@ -222,20 +218,20 @@ int main() {
 		//	}*/
 		//}
 	}
-	//interactiveMenu();
-	cout << endl;
+	interactiveMenu();
+	/*cout << endl;
 	{
 		polynomial f({
-			{2,2},{1,1},{5,0}
+			{-2,2},{-1,1},{5,0},{-5,-5}
 			});
 		double x = NewtonsMethod(f);
 		cout << x << endl;
-		cout << abs(f(x)) << endl;
+		cout << abs(f(x)) << endl << endl;
 		cout << f<<endl;
-	}
+	}*/
 
 
 	cout << "done!\n";
-	getchar();
+	//getchar();
 }
 
