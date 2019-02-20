@@ -8,6 +8,7 @@
 #include <string>
 
 #include "MatrixLib.h"
+#include "PolynomLib.h"
 
 using namespace std;
 using namespace dml;
@@ -181,6 +182,9 @@ void interactiveMenu() {
 
 
 int main() {
+	const size_t N = 2;
+	double min = 0, max = 10;
+	default_random_engine gen(time(NULL));
 	{
 		//const size_t N = 2;
 		//double min = 0, max = 10;
@@ -218,7 +222,19 @@ int main() {
 		//	}*/
 		//}
 	}
-	interactiveMenu();
+	//interactiveMenu();
+	cout << endl;
+	{
+		polynomial f({
+			{2,2},{1,1},{5,0}
+			});
+		double x = NewtonsMethod(f);
+		cout << x << endl;
+		cout << abs(f(x)) << endl;
+		cout << f<<endl;
+	}
+
+
 	cout << "done!\n";
 	getchar();
 }
