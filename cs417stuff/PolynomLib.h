@@ -1,9 +1,10 @@
 #pragma once
 
-#include<math.h>
-#include<iostream>
-#include<vector>
-#include<random>
+#include <math.h>
+#include <iostream>
+#include <vector>
+#include <random>
+#include <algorithm>
 
 using namespace std;
 
@@ -54,6 +55,19 @@ struct polynomial {
 		for (int i = 0; i < function.size(); i++)
 			sum += function[i].eval(x);
 		return sum;
+	}
+	double highestOrder() {
+		double max = 0;
+		for (int i = 0; i < function.size(); i++)
+			if (function[i].e > max)
+				max = function[i].e;
+		return max;
+	}
+
+	void sortFunction() {
+		sort(function.begin(), function.end(), [](term a, term b) {
+			return a.e > b.e;
+		});
 	}
 
 	int size() {
