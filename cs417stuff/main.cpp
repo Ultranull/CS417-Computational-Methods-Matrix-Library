@@ -221,11 +221,44 @@ int main() {
 	//interactiveMenu();
 	cout << endl;
 	{
+<<<<<<< HEAD
 		polynomial f=randomPolynom(gen,min,max,4,true);
 		double x = NewtonsMethod(f);
 		cout << x << endl;
 		cout << abs(f(x)) << endl << endl;
 		cout << f<<endl;
+=======
+		normal_distribution<double> nd(0, .2);
+		polynomial f({
+			{2,2},{-4,1},{5,0},{9,4}
+			});
+		vector<vector<double>> Amat;
+		vector<vector<double>> bvec;
+
+		for (double x = 0.; x < 1000.; x++) {
+			double b = nd(gen)+f(x);
+			vector<double> Arow;
+			for (int i = 0; i < f.highestOrder()+1; i++)
+				Arow.push_back(pow(x, i));
+			Amat.push_back(Arow);
+			bvec.push_back(vector<double>(1,b));
+		}
+		mat A(Amat);
+		mat b(bvec);
+
+		mat At = A.transpose();
+		mat AtA = At * A;
+		mat Atb = At * b;
+
+		mat x = GaussianElimination(AtA, Atb);
+
+		f.sortFunction();
+		cout << f.highestOrder() << endl;
+		cout << f << endl;
+		cout << x << endl;
+
+		
+>>>>>>> c36623079167ed53909e8e89166bd19f5aa0c5d4
 	}
 
 
