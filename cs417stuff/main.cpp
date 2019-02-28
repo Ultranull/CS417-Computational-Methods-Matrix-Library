@@ -137,7 +137,7 @@ void interactiveMenu() {
 			cout << "number of iterations?: ";
 			cin >> iters;
 			t1 = high_resolution_clock::now();
-			x = SOR(A, b, b, iters);
+			x = SOR(A, b, b,1.2,iters);
 			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
 			cout << "\nx:\n" << x;
 			cout << "2-norm: " << norm(A * x - b) << endl;
@@ -179,7 +179,7 @@ void interactiveMenu() {
 
 int main() {
 	const size_t N = 2;
-	double min = 0, max = 10;
+	double min = -5, max = 10;
 	default_random_engine gen(time(NULL));
 	{
 		//const size_t N = 2;
@@ -218,20 +218,18 @@ int main() {
 		//	}*/
 		//}
 	}
-	interactiveMenu();
-	/*cout << endl;
+	//interactiveMenu();
+	cout << endl;
 	{
-		polynomial f({
-			{-2,2},{-1,1},{5,0},{-5,-5}
-			});
+		polynomial f=randomPolynom(gen,min,max,4,true);
 		double x = NewtonsMethod(f);
 		cout << x << endl;
 		cout << abs(f(x)) << endl << endl;
 		cout << f<<endl;
-	}*/
+	}
 
 
 	cout << "done!\n";
-	//getchar();
+	getchar();
 }
 
