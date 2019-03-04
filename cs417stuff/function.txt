@@ -1,3 +1,3 @@
-f(x)= 2.56431*x**5 + 5.26312*x**4 + 1.99235*x**2 + 5.24391
-plot f(x),\
-     'data.txt' with points
+f(x)= 0.7802*x**3 + 0.394586*x + 0.767808*x + 0.907173*x
+plot 'data.txt' with points,\
+     f(x)

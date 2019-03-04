@@ -1,5 +1,7 @@
 #include <vector>
 #include <iostream>
+#include <complex>
+#include <cstdlib>
 #include <fstream>
 #include <iomanip>
 #include <random>
@@ -224,20 +226,24 @@ int main() {
 	cout << endl;
 	{
 
+		polynomial f = randomPolynom(gen, 0, 1,0,3, 4);
 		normal_distribution<double> nd(0, .5);
+		normal_distribution<double> nd0(0., 10.);
 		uniform_real_distribution<double> dist(0, 3);
-		polynomial f = randomPolynom(gen, 0, 6);
 		vector<vector<double>> Amat;
 		vector<vector<double>> bvec;
 
 		ofstream out;
 		out.open("data.txt");
 		double num = 10;
-		for (double x = -num/2; x < num / 2; x+=.01) {
-			for (int i = 0; i < 1; i++) {
-				double xp = nd(gen) + x;
-				double b = nd(gen) + f(xp);
-				out << x << " " << b << endl;
+		for (double x = -num/2; x < num / 2; x+=.1) {
+			for (int i = 0; i < 10; i++) {
+				double rand0 = nd0(gen);
+				double rand =  nd(gen);
+				double xp = rand + x;
+				double b = rand0 + f(xp);
+				cout << rand0 << endl;
+				out << xp << " " << b << endl;
 				vector<double> Arow;
 				for (int i = 0; i < f.highestOrder() + 1; i++)
 					Arow.push_back(pow(xp, i));
@@ -264,11 +270,37 @@ int main() {
 
 		out.open("function.txt");
 		out <<"f(x)="<< f<<endl;
-		out << "plot f(x),\\\n";
-		out << "     'data.txt' with points\n";
+		out << "plot 'data.txt' with points,\\\n";
+		out << "     f(x)\n";
 		out.close();
 
-		system("gnuplot -p function.txt");
+
+		out.open("mandelplot.txt");
+		double px = 0, py = 0, zoom = .5;
+		double sz = 500;
+		for (double y = sz; y >= 0; y-=1) {
+			for (double x = 0; x<sz; x+1) {
+				double cx = px + ((x / sz) * 4 - 2) / zoom,
+					cy = py + ((y / sz) * 4 - 2) / zoom;
+				complex<double> c(cx, cy), z(0, 0);
+				int i = 0, mx = 30;
+				while (abs(z) <= 2 && i<mx) {
+					z = (z*z + c);
+					i++;
+				}
+				//cout << ((i >= mx) ? ' ' : (char)('!' + (i & 0xF)));
+				if (i >= mx)
+					out << z.real() << " " << z.imag()<<endl;
+			}
+		}
+
+		out << 2 << " " << 2 << endl;
+		out << -2 << " " << -2 << endl;
+		out << -2 << " " << 2 << endl;
+		out << 2 << " " << -2 << endl;
+		out.close();
+
+		system("gnuplot -p show.txt ");
 		
 	}
 

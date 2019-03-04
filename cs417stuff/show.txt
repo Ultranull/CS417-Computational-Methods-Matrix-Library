@@ -1,0 +1,1 @@
+plot 'mandelplot.txt' with points

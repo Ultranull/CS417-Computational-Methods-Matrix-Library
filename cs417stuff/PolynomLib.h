@@ -114,14 +114,15 @@ polynomial ddx(polynomial f) {
 	return polynomial(fp);
 }
 
-polynomial randomPolynom(default_random_engine &gen, double min, double max, int n = 4, bool rounded = false) {
-	uniform_real_distribution<double> dist(min, max);
+polynomial randomPolynom(default_random_engine &gen, double minc, double maxc, double mine, double maxe, int n = 4, bool rounded = false) {
+	uniform_real_distribution<double> distc(minc, maxc);
+	uniform_real_distribution<double> diste(mine, maxe);
 	polynomial out(n);
 	for (int i = 0; i < n; i++) {
 		if (rounded)
-			out[i] = term(round(dist(gen)), round(dist(gen)));
+			out[i] = term(round(distc(gen)), round(diste(gen)));
 		else
-			out[i] = term(dist(gen), round(dist(gen)));
+			out[i] = term(distc(gen), round(diste(gen)));
 	}
 	return out;
 }
