@@ -92,16 +92,18 @@ ostream& operator<<(ostream &out, polynomial f) {
 		}
 		if (f[i].c != 1. && f[i].c != -1.)
 			out << abs(f[i].c);
+		if (f[i].c != 1.&&f[i].e != 0)
+			out << "*";
 		if (f[i].e != 0.)
 			out << "x";
 		if (f[i].e != 1.&&f[i].e != 0.)
-			out << "^";
+			out << "**";
 		if (f[i].e > 1.)
 			out << f[i].e;
 		else if (f[i].e < 0.)
 			out << "(" << f[i].e << ")";
 	}
-	out << " = 0";
+	//out << " = 0";
 	return out;
 }
 

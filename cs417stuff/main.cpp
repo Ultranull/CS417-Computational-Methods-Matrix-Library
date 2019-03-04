@@ -6,6 +6,8 @@
 #include <ctime>
 #include <chrono>
 #include <string>
+#include <stdlib.h>
+
 
 #include "MatrixLib.h"
 #include "PolynomLib.h"
@@ -222,21 +224,28 @@ int main() {
 	cout << endl;
 	{
 
-		normal_distribution<double> nd(0, .2);
-		polynomial f({
-			{2,1},{-2,0}
-			});
+		normal_distribution<double> nd(0, .5);
+		uniform_real_distribution<double> dist(0, 3);
+		polynomial f = randomPolynom(gen, 0, 6);
 		vector<vector<double>> Amat;
 		vector<vector<double>> bvec;
 
-		for (double x = 0.; x < 1000.; x++) {
-			double b = nd(gen)+f(x);
-			vector<double> Arow;
-			for (int i = 0; i < f.highestOrder()+1; i++)
-				Arow.push_back(pow(x, i));
-			Amat.push_back(Arow);
-			bvec.push_back(vector<double>(1,0));
+		ofstream out;
+		out.open("data.txt");
+		double num = 10;
+		for (double x = -num/2; x < num / 2; x+=.01) {
+			for (int i = 0; i < 1; i++) {
+				double xp = nd(gen) + x;
+				double b = nd(gen) + f(xp);
+				out << x << " " << b << endl;
+				vector<double> Arow;
+				for (int i = 0; i < f.highestOrder() + 1; i++)
+					Arow.push_back(pow(xp, i));
+				Amat.push_back(Arow);
+				bvec.push_back(vector<double>(1, b));
+			}
 		}
+		out.close();
 		mat A(Amat);
 		mat b(bvec);
 
@@ -252,11 +261,19 @@ int main() {
 		cout << x << endl;
 		
 
+
+		out.open("function.txt");
+		out <<"f(x)="<< f<<endl;
+		out << "plot f(x),\\\n";
+		out << "     'data.txt' with points\n";
+		out.close();
+
+		system("gnuplot -p function.txt");
 		
 	}
 
 
 	cout << "done!\n";
-	getchar();
+	//getchar();
 }
 
