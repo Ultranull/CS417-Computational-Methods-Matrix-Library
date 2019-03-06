@@ -255,18 +255,34 @@ int main() {
 		mat A(Amat);
 		mat b(bvec);
 
-		mat At = A.transpose();
-		mat AtA = At * A;
-		mat Atb = At * b;
+		//mat At = A.transpose();
+		//mat AtA = At * A;
+		//mat Atb = At * b;
 
-		mat x = GaussianElimination(AtA, Atb);
+		mat Q(A.cols(),A.rows()), R(A.cols(), A.cols()),q(1,A.rows());
 
-		f.sortFunction();
-		cout << f.highestOrder() << endl;
-		cout << f << endl;
-		cout << x << endl;
-		
+		for (int k = 0; k < A.cols(); k++) {
+			mat ak = A.col(k);
+			R[k][k] = norm(ak);
+			q = ak / R[k][k];
+			for (int m = k+1; m < A.cols(); m++) {
+				mat rmk = (q.transpose()*A.col(m));
+				R[m][k] = rmk();
+			}
+			Q.insertCOL(k,q);
+		}
 
+		cout << Q << endl << R<<endl;
+
+
+		mat x = backSolve(R, Q.transpose()*b);
+
+		cout << norm(b-A * x) << endl;
+
+		//f.sortFunction();
+		//cout << f.highestOrder() << endl;
+		//cout << f << endl;
+		//cout << x << endl;
 
 		out.open("function.txt");
 		out <<"f(x)="<< f<<endl;
@@ -274,38 +290,12 @@ int main() {
 		out << "     f(x)\n";
 		out.close();
 
-
-		out.open("mandelplot.txt");
-		double px = 0, py = 0, zoom = .5;
-		double sz = 500;
-		for (double y = sz; y >= 0; y-=1) {
-			for (double x = 0; x<sz; x+1) {
-				double cx = px + ((x / sz) * 4 - 2) / zoom,
-					cy = py + ((y / sz) * 4 - 2) / zoom;
-				complex<double> c(cx, cy), z(0, 0);
-				int i = 0, mx = 30;
-				while (abs(z) <= 2 && i<mx) {
-					z = (z*z + c);
-					i++;
-				}
-				//cout << ((i >= mx) ? ' ' : (char)('!' + (i & 0xF)));
-				if (i >= mx)
-					out << z.real() << " " << z.imag()<<endl;
-			}
-		}
-
-		out << 2 << " " << 2 << endl;
-		out << -2 << " " << -2 << endl;
-		out << -2 << " " << 2 << endl;
-		out << 2 << " " << -2 << endl;
-		out.close();
-
-		system("gnuplot -p show.txt ");
+		//system("gnuplot -p function.txt ");
 		
 	}
 
 
 	cout << "done!\n";
-	//getchar();
+	getchar();
 }
 
