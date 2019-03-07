@@ -242,7 +242,6 @@ int main() {
 				double rand =  nd(gen);
 				double xp = rand + x;
 				double b = rand0 + f(xp);
-				cout << rand0 << endl;
 				out << xp << " " << b << endl;
 				vector<double> Arow;
 				for (int i = 0; i < f.highestOrder() + 1; i++)
@@ -252,12 +251,39 @@ int main() {
 			}
 		}
 		out.close();
-		mat A(Amat);
-		mat b(bvec);
+		//mat A(Amat);
+		//mat b(bvec);
 
-		//mat At = A.transpose();
-		//mat AtA = At * A;
-		//mat Atb = At * b;
+		mat A({
+			{1,-1,1},
+			{1,-.5,.25},
+			{1,0,0},
+			{1,.5,.25},
+			{1,1,1}
+			});
+		mat b({
+			{1},
+			{.5},
+			{0},
+			{.5},
+			{2},
+			});
+
+		//mat A = nonsingularMatrix(gen, min, max, N, true);
+		//mat b = randomVector(gen, min, max, N, true);
+
+		high_resolution_clock::time_point t1 = high_resolution_clock::now();
+		mat At = A.transpose();
+		mat AtA = At * A;
+		mat Atb = At * b;
+
+		mat x = GaussianElimination(AtA, Atb);
+
+		cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
+
+		cout << norm(b - A * x) << endl;
+
+		t1 = high_resolution_clock::now();
 
 		mat Q(A.cols(),A.rows()), R(A.cols(), A.cols()),q(1,A.rows());
 
@@ -272,26 +298,26 @@ int main() {
 			Q.insertCOL(k,q);
 		}
 
-		mat x = backSolve(R, Q.transpose()*b);
+		x = backSolve(R, Q.transpose()*b);
+
+		cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
+
 
 		cout << norm(b - A * x) << endl;
+
+
+		cout << Q << endl << R << endl;
 
 		vector<term> fpv;
 		for (int i = x.rows()-1; i >=0; i--)
 			fpv.push_back(term(x[0][i], i));
 		polynomial fp(fpv);
 		
-		f.sortFunction();
-		cout << f.highestOrder() << endl;
-		cout << f << endl;
-		cout << fp << endl;
-		
-
-
 		//f.sortFunction();
 		//cout << f.highestOrder() << endl;
 		//cout << f << endl;
-		//cout << x << endl;
+		//cout << fp << endl;
+		
 
 		out.open("function.txt");
 		out << "fp(x)="<< fp<<endl;
