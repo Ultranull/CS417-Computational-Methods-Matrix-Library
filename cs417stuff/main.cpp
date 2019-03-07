@@ -255,11 +255,26 @@ int main() {
 		mat A(Amat);
 		mat b(bvec);
 
-		mat At = A.transpose();
-		mat AtA = At * A;
-		mat Atb = At * b;
+		//mat At = A.transpose();
+		//mat AtA = At * A;
+		//mat Atb = At * b;
 
-		mat x = GaussianElimination(AtA, Atb);
+		mat Q(A.cols(),A.rows()), R(A.cols(), A.cols()),q(1,A.rows());
+
+		for (int k = 0; k < A.cols(); k++) {
+			mat ak = A.col(k);
+			R[k][k] = norm(ak);
+			q = ak / R[k][k];
+			for (int m = k+1; m < A.cols(); m++) {
+				mat rmk = (q.transpose()*A.col(m));
+				R[m][k] = rmk();
+			}
+			Q.insertCOL(k,q);
+		}
+
+		mat x = backSolve(R, Q.transpose()*b);
+
+		cout << norm(b - A * x) << endl;
 
 		vector<term> fpv;
 		for (int i = x.rows()-1; i >=0; i--)
@@ -272,6 +287,11 @@ int main() {
 		cout << fp << endl;
 		
 
+
+		//f.sortFunction();
+		//cout << f.highestOrder() << endl;
+		//cout << f << endl;
+		//cout << x << endl;
 
 		out.open("function.txt");
 		out << "fp(x)="<< fp<<endl;

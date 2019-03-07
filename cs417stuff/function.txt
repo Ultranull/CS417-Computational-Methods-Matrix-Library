@@ -1,5 +1,0 @@
-fp(x)= 5.01494*x**3 + 6.88712*x**2 - 1.21844*x + 0.766698
-f(x)= 5*x**3 + 7*x**2 - 1*x
-plot 'data.txt' with points,\
-     fp(x) lt rgb "red",\
-     f(x)

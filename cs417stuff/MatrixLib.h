@@ -33,7 +33,7 @@ namespace dml {
 		}
 		mat col(unsigned int ind) { 
 			mat out(0,1,rows());
-			out.data[ind] = data[0];
+			out.data[0] = data[ind];
 			return out; 
 		}
 		mat row(unsigned int ind) {
