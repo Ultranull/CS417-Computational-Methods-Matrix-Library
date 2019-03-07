@@ -226,18 +226,18 @@ int main() {
 	cout << endl;
 	{
 
-		polynomial f = randomPolynom(gen, 0, 1,0,3, 4);
-		normal_distribution<double> nd(0, .5);
-		normal_distribution<double> nd0(0., 10.);
+		polynomial f = randomPolynom(gen, -5, 5,0,3, 8,true);
+		normal_distribution<double> nd(0, 1);
+		normal_distribution<double> nd0(0., 15.);
 		uniform_real_distribution<double> dist(0, 3);
 		vector<vector<double>> Amat;
 		vector<vector<double>> bvec;
 
 		ofstream out;
 		out.open("data.txt");
-		double num = 10;
-		for (double x = -num/2; x < num / 2; x+=.1) {
-			for (int i = 0; i < 10; i++) {
+		double num = 5;
+		for (double x = -num/2; x < num / 2; x+=.01) {
+			for (int i = 0; i < 1; i++) {
 				double rand0 = nd0(gen);
 				double rand =  nd(gen);
 				double xp = rand + x;
@@ -261,51 +261,32 @@ int main() {
 
 		mat x = GaussianElimination(AtA, Atb);
 
+		vector<term> fpv;
+		for (int i = x.rows()-1; i >=0; i--)
+			fpv.push_back(term(x[0][i], i));
+		polynomial fp(fpv);
+		
 		f.sortFunction();
 		cout << f.highestOrder() << endl;
 		cout << f << endl;
-		cout << x << endl;
+		cout << fp << endl;
 		
 
 
 		out.open("function.txt");
-		out <<"f(x)="<< f<<endl;
+		out << "fp(x)="<< fp<<endl;
+		out << "f(x)=" << f << endl;
 		out << "plot 'data.txt' with points,\\\n";
+		out << "     fp(x) lt rgb \"red\",\\\n";
 		out << "     f(x)\n";
 		out.close();
 
-
-		out.open("mandelplot.txt");
-		double px = 0, py = 0, zoom = .5;
-		double sz = 500;
-		for (double y = sz; y >= 0; y-=1) {
-			for (double x = 0; x<sz; x+1) {
-				double cx = px + ((x / sz) * 4 - 2) / zoom,
-					cy = py + ((y / sz) * 4 - 2) / zoom;
-				complex<double> c(cx, cy), z(0, 0);
-				int i = 0, mx = 30;
-				while (abs(z) <= 2 && i<mx) {
-					z = (z*z + c);
-					i++;
-				}
-				//cout << ((i >= mx) ? ' ' : (char)('!' + (i & 0xF)));
-				if (i >= mx)
-					out << z.real() << " " << z.imag()<<endl;
-			}
-		}
-
-		out << 2 << " " << 2 << endl;
-		out << -2 << " " << -2 << endl;
-		out << -2 << " " << 2 << endl;
-		out << 2 << " " << -2 << endl;
-		out.close();
-
-		system("gnuplot -p show.txt ");
+		//system("gnuplot.exe -p function.txt ");
 		
 	}
 
 
 	cout << "done!\n";
-	//getchar();
+	getchar();
 }
 

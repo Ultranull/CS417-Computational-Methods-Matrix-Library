@@ -5,6 +5,7 @@
 #include <vector>
 #include <random>
 #include <algorithm>
+#include <limits>
 
 using namespace std;
 
@@ -17,6 +18,10 @@ struct term {
 
 	double eval(double x) {
 		return c * pow(x, e);
+	}
+
+	bool operator==(term &t) {
+		return t.e == e && t.c&&c;
 	}
 
 };
@@ -77,6 +82,7 @@ struct polynomial {
 	term& operator[](int i) {
 		return function[i];
 	}
+
 };
 
 ostream& operator<<(ostream &out, polynomial f) {
@@ -90,12 +96,9 @@ ostream& operator<<(ostream &out, polynomial f) {
 			out << "-";
 			if (i > 0) out << " ";
 		}
-		if (f[i].c != 1. && f[i].c != -1.)
-			out << abs(f[i].c);
-		if (f[i].c != 1.&&f[i].e != 0)
-			out << "*";
+		out << abs(f[i].c);
 		if (f[i].e != 0.)
-			out << "x";
+			out << "*x";
 		if (f[i].e != 1.&&f[i].e != 0.)
 			out << "**";
 		if (f[i].e > 1.)
@@ -119,10 +122,20 @@ polynomial randomPolynom(default_random_engine &gen, double minc, double maxc, d
 	uniform_real_distribution<double> diste(mine, maxe);
 	polynomial out(n);
 	for (int i = 0; i < n; i++) {
+		term t;
 		if (rounded)
-			out[i] = term(round(distc(gen)), round(diste(gen)));
+			t = term(round(distc(gen)), round(diste(gen)));
 		else
-			out[i] = term(distc(gen), round(diste(gen)));
+			t = term(distc(gen), round(diste(gen)));
+
+		bool found = false;
+		for (int c = 0; c <= i; c++)
+			if (out[c].e == t.e) {
+				out[c].c += t.c;
+				found = true;
+			}
+		if(!found)
+			out[i] = t;
 	}
 	return out;
 }
