@@ -226,23 +226,22 @@ int main() {
 	cout << endl;/*
 	{
 
-		polynomial f = randomPolynom(gen, 0, 1,0,3, 4);
-		normal_distribution<double> nd(0, .5);
-		normal_distribution<double> nd0(0., 10.);
+		polynomial f = randomPolynom(gen, -5, 5,0,3, 8,true);
+		normal_distribution<double> nd(0, 1);
+		normal_distribution<double> nd0(0., 15.);
 		uniform_real_distribution<double> dist(0, 3);
 		vector<vector<double>> Amat;
 		vector<vector<double>> bvec;
 
 		ofstream out;
 		out.open("data.txt");
-		double num = 10;
-		for (double x = -num/2; x < num / 2; x+=.1) {
-			for (int i = 0; i < 10; i++) {
+		double num = 5;
+		for (double x = -num/2; x < num / 2; x+=.01) {
+			for (int i = 0; i < 1; i++) {
 				double rand0 = nd0(gen);
 				double rand =  nd(gen);
 				double xp = rand + x;
 				double b = rand0 + f(xp);
-				cout << rand0 << endl;
 				out << xp << " " << b << endl;
 				vector<double> Arow;
 				for (int i = 0; i < f.highestOrder() + 1; i++)
@@ -252,12 +251,39 @@ int main() {
 			}
 		}
 		out.close();
-		mat A(Amat);
-		mat b(bvec);
+		//mat A(Amat);
+		//mat b(bvec);
 
-		//mat At = A.transpose();
-		//mat AtA = At * A;
-		//mat Atb = At * b;
+		mat A({
+			{1,-1,1},
+			{1,-.5,.25},
+			{1,0,0},
+			{1,.5,.25},
+			{1,1,1}
+			});
+		mat b({
+			{1},
+			{.5},
+			{0},
+			{.5},
+			{2},
+			});
+
+		//mat A = nonsingularMatrix(gen, min, max, N, true);
+		//mat b = randomVector(gen, min, max, N, true);
+
+		high_resolution_clock::time_point t1 = high_resolution_clock::now();
+		mat At = A.transpose();
+		mat AtA = At * A;
+		mat Atb = At * b;
+
+		mat x = GaussianElimination(AtA, Atb);
+
+		cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
+
+		cout << norm(b - A * x) << endl;
+
+		t1 = high_resolution_clock::now();
 
 		mat Q(A.cols(),A.rows()), R(A.cols(), A.cols()),q(1,A.rows());
 
@@ -272,25 +298,36 @@ int main() {
 			Q.insertCOL(k,q);
 		}
 
-		cout << Q << endl << R<<endl;
+		x = backSolve(R, Q.transpose()*b);
+
+		cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
 
 
-		mat x = backSolve(R, Q.transpose()*b);
+		cout << norm(b - A * x) << endl;
 
-		cout << norm(b-A * x) << endl;
 
+		cout << Q << endl << R << endl;
+
+		vector<term> fpv;
+		for (int i = x.rows()-1; i >=0; i--)
+			fpv.push_back(term(x[0][i], i));
+		polynomial fp(fpv);
+		
 		//f.sortFunction();
 		//cout << f.highestOrder() << endl;
 		//cout << f << endl;
-		//cout << x << endl;
+		//cout << fp << endl;
+		
 
 		out.open("function.txt");
-		out <<"f(x)="<< f<<endl;
+		out << "fp(x)="<< fp<<endl;
+		out << "f(x)=" << f << endl;
 		out << "plot 'data.txt' with points,\\\n";
+		out << "     fp(x) lt rgb \"red\",\\\n";
 		out << "     f(x)\n";
 		out.close();
 
-		//system("gnuplot -p function.txt ");
+		//system("gnuplot.exe -p function.txt ");
 		
 	}
 	*/
