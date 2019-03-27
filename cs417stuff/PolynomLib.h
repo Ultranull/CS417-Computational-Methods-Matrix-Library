@@ -113,6 +113,12 @@ polynomial ddx(polynomial f) {
 		fp.push_back(term(f[i].c*f[i].e, f[i].e - 1));
 	return polynomial(fp);
 }
+polynomial sdx(polynomial f) {
+	vector<term> fp;
+	for (int i = 0; i < f.size(); i++)
+		fp.push_back(term(f[i].c/ (f[i].e+1), f[i].e + 1));
+	return polynomial(fp);
+}
 
 polynomial randomPolynom(default_random_engine &gen, double minc, double maxc, double mine, double maxe, int n = 4, bool rounded = false) {
 	uniform_real_distribution<double> distc(minc, maxc);
