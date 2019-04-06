@@ -7,24 +7,49 @@
 #include <algorithm>
 #include <limits>
 
+
 using namespace std;
 
 struct term {
 	double e;
 	double c;
-
-	term(double c, double e) :e(e), c(c) {}
-	term() :term(0, 0) {}
-
-	double eval(double x) {
-		return c * pow(x, e);
-	}
-
-	bool operator==(term &t) {
-		return t.e == e && t.c&&c;
-	}
-
+	term(double c, double e);
+	term();
+	double eval(double x);
+	bool operator==(term &t);
 };
+ostream& operator<<(ostream &out, term t);
+
+struct polynomial {
+	vector<term> function;
+	polynomial(vector<term>f);
+	polynomial(int n);
+	polynomial();
+	double operator()(double x);
+	double highestOrder();
+	void sortFunction();
+	int size();
+	term& operator[](int i);
+};
+ostream& operator<<(ostream &out, polynomial f);
+polynomial ddx(polynomial f);
+polynomial sdx(polynomial f);
+
+polynomial randomPolynom(default_random_engine &gen, double minc, double maxc, double mine, double maxe, int n, bool rounded);
+double NewtonsMethod(polynomial f, double guess, int max, double epsilon);
+double Bisection(polynomial f, double xL, double xR);
+
+#ifdef POLY_IMPL
+term::term(double c, double e) :e(e), c(c) {}
+term::term() : term(0, 0) {}
+
+double term::eval(double x) {
+	return c * pow(x, e);
+}
+
+bool term::operator==(term &t) {
+	return t.e == e && t.c&&c;
+}
 
 ostream& operator<<(ostream &out, term t) {
 	if (t.c == 0.)
@@ -47,43 +72,39 @@ ostream& operator<<(ostream &out, term t) {
 }
 
 
-struct polynomial {
-	vector<term> function;
-	polynomial(vector<term>f) :function(f) {}
-	polynomial(int n) {
-		function = vector<term>(n, term());
-	}
-	polynomial() {}
+polynomial::polynomial(vector<term>f) :function(f) {}
+polynomial::polynomial(int n) {
+	function = vector<term>(n, term());
+}
+polynomial::polynomial() {}
 
-	double operator()(double x) {
-		double sum = 0;
-		for (int i = 0; i < function.size(); i++)
-			sum += function[i].eval(x);
-		return sum;
-	}
-	double highestOrder() {
-		double max = 0;
-		for (int i = 0; i < function.size(); i++)
-			if (function[i].e > max)
-				max = function[i].e;
-		return max;
-	}
+double polynomial::operator()(double x) {
+	double sum = 0;
+	for (int i = 0; i < function.size(); i++)
+		sum += function[i].eval(x);
+	return sum;
+}
+double polynomial::highestOrder() {
+	double max = 0;
+	for (int i = 0; i < function.size(); i++)
+		if (function[i].e > max)
+			max = function[i].e;
+	return max;
+}
 
-	void sortFunction() {
-		sort(function.begin(), function.end(), [](term a, term b) {
-			return a.e > b.e;
-		});
-	}
+void polynomial::sortFunction() {
+	sort(function.begin(), function.end(), [](term a, term b) {
+		return a.e > b.e;
+	});
+}
 
-	int size() {
-		return function.size();
-	}
+int polynomial::size() {
+	return function.size();
+}
 
-	term& operator[](int i) {
-		return function[i];
-	}
-
-};
+term& polynomial::operator[](int i) {
+	return function[i];
+}
 
 ostream& operator<<(ostream &out, polynomial f) {
 	for (int i = 0; i < f.size(); i++) {
@@ -91,16 +112,16 @@ ostream& operator<<(ostream &out, polynomial f) {
 			continue;
 		out << " ";
 		if (f[i].c > 0. && i > 0)
-				out << "+ ";
+			out << "+ ";
 		if (f[i].c < 0.) {
 			out << "-";
 			if (i > 0) out << " ";
 		}
 		out << abs(f[i].c);
 		if (f[i].e != 0.)
-			out << "*x";
+			out << "x";
 		if (f[i].e != 1.&&f[i].e != 0.)
-			out << "**";
+			out << "^";
 		if (f[i].e > 1.)
 			out << f[i].e;
 		else if (f[i].e < 0.)
@@ -119,7 +140,7 @@ polynomial ddx(polynomial f) {
 polynomial sdx(polynomial f) {
 	vector<term> fp;
 	for (int i = 0; i < f.size(); i++)
-		fp.push_back(term(f[i].c/ (f[i].e+1), f[i].e + 1));
+		fp.push_back(term(f[i].c / (f[i].e + 1), f[i].e + 1));
 	return polynomial(fp);
 }
 
@@ -140,7 +161,7 @@ polynomial randomPolynom(default_random_engine &gen, double minc, double maxc, d
 				out[c].c += t.c;
 				found = true;
 			}
-		if(!found)
+		if (!found)
 			out[i] = t;
 	}
 	return out;
@@ -158,3 +179,45 @@ double NewtonsMethod(polynomial f, double guess = 1., int max = 100, double epsi
 	}
 	return xnew;
 }
+
+double Bisection(polynomial f, double xL, double xR) {
+
+	double xMid;
+	double fL, fR, fMid;
+
+	xMid = (xL + xR) / 2.0;
+	int ct = 1;
+	double error = abs(f(xMid));
+	double tol = pow(10, -5);
+	while (error > tol) {
+		fL = f(xL);
+		fR = f(xR);
+		fMid = f(xMid);
+		error = abs(fMid);
+		if (error > tol) {
+			if ((fL > 0) && (fR > 0) && (fMid > 0)) {
+				if (fR > fL) { xR = xMid; }
+				else { xL = xMid; }
+			}
+
+			else if (fMid > 0) {
+				if (fL < 0) { xR = xMid; }
+				else if (fR < 0) { xL = xMid; }
+			}
+			else if (fMid < 0)
+			{
+				if (fL > 0) { xR = xMid; }
+				else if (fR > 0) { xL = xMid; }
+			}
+
+			xMid = (xR + xL) / 2.0;
+		}
+		ct++;
+
+	}
+	return xMid;
+
+}
+
+
+#endif // POLY_IMPL

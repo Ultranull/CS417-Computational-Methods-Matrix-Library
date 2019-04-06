@@ -10,12 +10,12 @@
 #include <string>
 #include <stdlib.h>
 
-
+#define MAT_IMPL
 #include "MatrixLib.h"
+#define POLY_IMPL
 #include "PolynomLib.h"
 
 using namespace std;
-using namespace dml;
 using namespace std::chrono;
 
 void load(mat &A, mat &b,string file) {
@@ -68,8 +68,8 @@ int menu() {
 	cout << "8. Solve current matrix with SOR method\n";
 	cout << "9. Find EiganVector and dominant Eigan Value using power iteration\n";
 	cout << "10. Find a root to polynomial using newtons method\n";
-	//cout << "9. Save current solution vector x to file\n";
-	//cout << "10. Graph current solution vector x using GNUPLOT\n";
+	cout << "11. Find a root to polynomial using bisection\n";
+	cout << "12. Graph current solution vector x using GNUPLOT\n";
 	cout << "13. display A and b\n";
 	cout << "0. exit\n";
 
@@ -169,6 +169,42 @@ void interactiveMenu() {
 			cout <<f<<endl;
 			cout << "where x = " << root<<endl;
 		}break;
+		case 11: {
+			int n;
+			cout << "\nplease enter number of coefficeints: ";
+			cin >> n;
+			vector<term> arrf(n);
+			cout << "for each term enter the coefficient then exponent \n(ex: \'1 2 -3 4\' -> \'1x^2-3x^4=0)\n";
+			for (int i = 0; i < n; i++)
+				cin >> arrf[i].c >> arrf[i].e;
+			polynomial f(arrf);
+			double xL, xR;
+			cout << "what is xL?" << endl;
+			cin >> xL;
+			cout << "what is xR?" << endl;
+			cin >> xR;
+			double root = Bisection(f, xL,xR);
+			cout << f << endl;
+			cout << "where x = " << root << endl;
+		}break;
+		case 12: {
+			int nx=sqrt(x.rows()), ny= sqrt(x.rows());
+			ofstream out;
+			out.open("x_graph.dat");
+			for(int y=0;y<ny;y++)
+				for (int xx = 0; xx < nx; xx++){
+					out <<xx<<" "<<y<<" "<<x[0][xx + y * nx]<<"\n";
+				}
+			out.close();
+
+			out.open("function.txt");
+			out << "set hidden3d\n"<<
+				   "set dgrid3d 50, 50 qnorm 2\n"<<
+				   "splot 'x_graph.dat' with lines\n";
+			out.close();
+
+			system("gnuplot.exe -p function.txt ");
+		}break;
 		case 13: {
 			cout << "\nA: \n" << A << "b:\n" << b << endl;
 		}break;
@@ -182,155 +218,7 @@ void interactiveMenu() {
 
 
 int main() {
-	const size_t N = 2;
-	double min = -5, max = 10;
-	default_random_engine gen(time(NULL));
-	{
-		//const size_t N = 2;
-		//double min = 0, max = 10;
-		//default_random_engine gen(time(NULL));
-		//if(0){
-		//	
-		//	mat A = nonsingularMatrix(gen, min, max, N, true);
-		//	mat b = randomVector(gen, min, max, N, true);
-
-
-		//	mat bk;
-		//	double mu;
-
-		//	PowerIteration(A, mu, bk);
-
-		//	mat Al = A * bk, lv = mu * bk;
-		//	cout << norm(Al) << endl << norm(lv) << endl;
-
-		//	mat f = randomVector(gen, min, max, 100, true).transpose();
-
-		//	double x = NewtonsMethod(f);
-		//	cout << x << endl;
-		//	cout << abs(fx(f, x)) << endl;
-		//	/*for (int i = 0; i < 100; i++) {
-		//		mat At = nonsingularMatrix(gen, min, max, N, true);
-		//		mat bt = randomVector(gen, min, max, N, true);
-		//		vector<double> error;
-		//		mat xnew = SOR(At, bt, bt,.2, error, 1, 100);
-		//		mat twoNorm = At * xnew - bt;
-		//		cout << "SOR: " <<error.size()<<" 2norm: "<<norm(twoNorm) << endl;
-		//		error.clear();
-		//		xnew = GaussSeidel(At, bt, bt, error, 1, 100);
-		//		twoNorm = At * xnew - bt;
-		//		cout <<"guass-siedel: "<< error.size() << " 2norm: " << norm(twoNorm) << endl << endl;
-		//	}*/
-		//}
-	}
-	//interactiveMenu();
-	cout << endl;
-	{
-
-		polynomial f = randomPolynom(gen, -5, 5,0,3, 8,true);
-		normal_distribution<double> nd(0, 1);
-		normal_distribution<double> nd0(0., 15.);
-		uniform_real_distribution<double> dist(0, 3);
-		vector<vector<double>> Amat;
-		vector<vector<double>> bvec;
-
-		ofstream out;
-		out.open("data.txt");
-		double num = 5;
-		for (double x = -num/2; x < num / 2; x+=.01) {
-			for (int i = 0; i < 1; i++) {
-				double rand0 = nd0(gen);
-				double rand =  nd(gen);
-				double xp = rand + x;
-				double b = rand0 + f(xp);
-				out << xp << " " << b << endl;
-				vector<double> Arow;
-				for (int i = 0; i < f.highestOrder() + 1; i++)
-					Arow.push_back(pow(xp, i));
-				Amat.push_back(Arow);
-				bvec.push_back(vector<double>(1, b));
-			}
-		}
-		out.close();
-		//mat A(Amat);
-		//mat b(bvec);
-
-		mat A({
-			{1,-1,1},
-			{1,-.5,.25},
-			{1,0,0},
-			{1,.5,.25},
-			{1,1,1}
-			});
-		mat b({
-			{1},
-			{.5},
-			{0},
-			{.5},
-			{2},
-			});
-
-		//mat A = nonsingularMatrix(gen, min, max, N, true);
-		//mat b = randomVector(gen, min, max, N, true);
-
-		high_resolution_clock::time_point t1 = high_resolution_clock::now();
-		mat At = A.transpose();
-		mat AtA = At * A;
-		mat Atb = At * b;
-
-		mat x = GaussianElimination(AtA, Atb);
-
-		cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
-
-		cout << norm(b - A * x) << endl;
-
-		t1 = high_resolution_clock::now();
-
-		mat Q(A.cols(),A.rows()), R(A.cols(), A.cols()),q(1,A.rows());
-
-		for (int k = 0; k < A.cols(); k++) {
-			mat ak = A.col(k);
-			R[k][k] = norm(ak);
-			q = ak / R[k][k];
-			for (int m = k+1; m < A.cols(); m++) {
-				mat rmk = (q.transpose()*A.col(m));
-				R[m][k] = rmk();
-			}
-			Q.insertCOL(k,q);
-		}
-
-		x = backSolve(R, Q.transpose()*b);
-
-		cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
-
-
-		cout << norm(b - A * x) << endl;
-
-
-		cout << Q << endl << R << endl;
-
-		vector<term> fpv;
-		for (int i = x.rows()-1; i >=0; i--)
-			fpv.push_back(term(x[0][i], i));
-		polynomial fp(fpv);
-		
-		//f.sortFunction();
-		//cout << f.highestOrder() << endl;
-		//cout << f << endl;
-		//cout << fp << endl;
-		
-
-		out.open("function.txt");
-		out << "fp(x)="<< fp<<endl;
-		out << "f(x)=" << f << endl;
-		out << "plot 'data.txt' with points,\\\n";
-		out << "     fp(x) lt rgb \"red\",\\\n";
-		out << "     f(x)\n";
-		out.close();
-
-		//system("gnuplot.exe -p function.txt ");
-		
-	}
-
+	interactiveMenu();
 	cout << "done!\n";
 	getchar();
 }
