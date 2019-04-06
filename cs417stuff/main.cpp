@@ -223,7 +223,7 @@ int main() {
 		//}
 	}
 	//interactiveMenu();
-	cout << endl;/*
+	cout << endl;
 	{
 
 		polynomial f = randomPolynom(gen, -5, 5,0,3, 8,true);
@@ -330,15 +330,6 @@ int main() {
 		//system("gnuplot.exe -p function.txt ");
 		
 	}
-	*/
-
-
-	polynomial f({
-		{1,2}, {1,3}
-		});
-	cout << f << endl;
-	cout << ddx(f)<<endl;
-	cout << sdx(ddx(f)) << endl;
 
 	cout << "done!\n";
 	getchar();

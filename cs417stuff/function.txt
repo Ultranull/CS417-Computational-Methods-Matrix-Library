@@ -1,5 +1,5 @@
 fp(x)= 2.22948*x**2 + 0.632456*x - 0.703782
-f(x)= -3 - 3*x**2 - 6*x**3 - 4*x
+f(x)= 18*x + 1 + 1 + 1 + 1 + 1 + 5
 plot 'data.txt' with points,\
      fp(x) lt rgb "red",\
      f(x)
