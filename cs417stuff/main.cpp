@@ -205,11 +205,17 @@ void interactiveMenu() {
 					out <<xx<<" "<<y<<" "<<x[0][xx + y * nx]<<"\n";
 				}
 			out.close();
+			out.open("b_graph.dat");
+			for (int y = 0; y<ny; y++)
+				for (int xx = 0; xx < nx; xx++) {
+					out << xx << " " << y << " " << b[0][xx + y * nx] << "\n";
+				}
+			out.close();
 
 			out.open("function.txt");
 			out << "set hidden3d\n"<<
 				   "set dgrid3d 50, 50 qnorm 2\n"<<
-				   "splot 'x_graph.dat' with lines\n";
+				   "splot 'x_graph.dat' with lines,'b_graph.dat' with lines\n";
 			out.close();
 
 			system("gnuplot.exe -p function.txt ");
