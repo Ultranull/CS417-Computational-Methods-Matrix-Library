@@ -71,6 +71,7 @@ int menu() {
 	cout << "11. Find a root to polynomial using bisection\n";
 	cout << "12. Graph current solution vector x using GNUPLOT\n";
 	cout << "13. display A and b\n";
+	cout << "14. display stored data information\n";
 	cout << "0. exit\n";
 
 	cin >> option;
@@ -80,7 +81,7 @@ void interactiveMenu() {
 	default_random_engine gen(time(NULL)); 
 	high_resolution_clock::time_point t1;
 	mat A(1,2,2), b(1, 1, 2),L,U,D,x,eiganvec;
-	double eiganVal;
+	double eiganVal=-0xff;
 	int option = -1;
 	while (option != 0) {
 		option = menu();
@@ -91,12 +92,20 @@ void interactiveMenu() {
 			cin >> n;
 			A = nonsingularMatrix(gen,0,10,n,true);
 			b = randomVector(gen,0,10,n,true);
+			x = mat();
+			eiganvec = mat();
+			eiganVal = -0xff;
 		}break;
 		case 2: {
 			string n;
 			cout << "what file?: ";
 			cin >> n;
 			load(A, b, n);
+			x = mat();
+			eiganvec = mat();
+			eiganVal = -0xff;
+			if (A.rows() >= 300)
+				cout << "\n!iterative method is recomended for matrix size!\n(use Gauss-Seidel with -1 (infinite iterations) for best results)\n";
 		}break;
 		case 3: {
 			string n;
@@ -207,6 +216,18 @@ void interactiveMenu() {
 		}break;
 		case 13: {
 			cout << "\nA: \n" << A << "b:\n" << b << endl;
+		}break;
+		case 14: {
+			cout << "\nA[" << A.rows() << "][" << A.cols() << "]\n";
+			cout << "b[" << b.rows() << "]\n";
+			if(!x.isEmpty())
+				cout << "x[" << x.rows() << "]\n";
+			else cout << "no x calculated\n";
+			if (eiganVal != -0xff) {
+				cout << "eigan vector[" << eiganvec.rows() << "]\n";
+				cout << "eigan value = " << eiganVal<<"\n";
+			}
+			else cout << "no eigan value or vector calculated\n";
 		}break;
 		}
 

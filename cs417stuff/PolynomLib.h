@@ -37,7 +37,7 @@ polynomial sdx(polynomial f);
 
 polynomial randomPolynom(default_random_engine &gen, double minc, double maxc, double mine, double maxe, int n, bool rounded);
 double NewtonsMethod(polynomial f, double guess, int max, double epsilon);
-double Bisection(polynomial f, double xL, double xR);
+double Bisection(polynomial f, double xL, double xR, int max = 100);
 
 #ifdef POLY_IMPL
 term::term(double c, double e) :e(e), c(c) {}
@@ -117,7 +117,8 @@ ostream& operator<<(ostream &out, polynomial f) {
 			out << "-";
 			if (i > 0) out << " ";
 		}
-		out << abs(f[i].c);
+		if(abs(f[i].c)!=1 || (f[i].e ==0&& abs(f[i].c) == 1)) // !eo && eo && ez
+			out << abs(f[i].c);
 		if (f[i].e != 0.)
 			out << "x";
 		if (f[i].e != 1.&&f[i].e != 0.)
@@ -180,7 +181,7 @@ double NewtonsMethod(polynomial f, double guess = 1., int max = 100, double epsi
 	return xnew;
 }
 
-double Bisection(polynomial f, double xL, double xR) {
+double Bisection(polynomial f, double xL, double xR, int max) {
 
 	double xMid;
 	double fL, fR, fMid;
@@ -189,7 +190,7 @@ double Bisection(polynomial f, double xL, double xR) {
 	int ct = 1;
 	double error = abs(f(xMid));
 	double tol = pow(10, -5);
-	while (error > tol) {
+	while (error > tol && ct<=max) {
 		fL = f(xL);
 		fR = f(xR);
 		fMid = f(xMid);

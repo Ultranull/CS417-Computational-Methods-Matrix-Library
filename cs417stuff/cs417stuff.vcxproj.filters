@@ -20,9 +20,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Text.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="MatrixLib.h">
       <Filter>Header Files</Filter>
     </ClInclude>

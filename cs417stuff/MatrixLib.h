@@ -24,6 +24,7 @@ struct mat {
 	void insertCOL(int ind, mat r);
 	int cols();
 	int rows();
+	bool isEmpty();
 	static mat identity(int n) {
 		mat out(0, n, n);
 		for (int r = 0; r < n; r++)
@@ -65,7 +66,7 @@ void PowerIteration(mat A, double &eiganval, mat &eiganvector);
 		data = vector<vector<double>>(cols,
 			vector<double>(rows, t));
 	}
-	mat::mat() {}
+	mat::mat():mat(0,0) {}
 	mat::mat(int cols, int rows) :mat(0, cols, rows) {}
 	mat::mat(const mat &m) {
 		this->data = m.data;
@@ -113,6 +114,11 @@ void PowerIteration(mat A, double &eiganval, mat &eiganvector);
 	int mat::rows() {
 		return data[0].size();
 	}
+
+	bool mat::isEmpty() {
+		return data.empty();
+	}
+
 ostream& operator<<(ostream &out, mat &m) {
 	for (int r = 0; r < m.rows(); r++) {
 		out << "[";
