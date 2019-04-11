@@ -52,10 +52,10 @@ mat LUDecomposition(mat A, mat b);
 mat nonsingularMatrix(default_random_engine &gen, double min, double max, int n, bool rounded);
 mat randomVector(default_random_engine &gen, double min, double max, int n, bool rounded);
 void split(mat A, mat &L, mat &D, mat &U);
-mat JacobiIterative(mat A, mat b, mat guess, int iters);
+mat JacobiIterative(mat A, mat b, mat guess, int &count, int iters);
 mat JacobiIterative(mat A, mat b, mat guess, vector<double> &twoN, int errordiv, int iters);
 mat GaussSeidel(mat A, mat b, mat guess, vector<double> &twoN, int errordiv, int iters);
-mat GaussSeidel(mat A, mat b, mat guess, int iters);
+mat GaussSeidel(mat A, mat b, mat guess, int &count, int iters);
 mat SOR(mat A, mat b, mat guess, double con, vector<double> &twoN, int errordiv, int iters);
 mat SOR(mat A, mat b, mat guess, double con, int iters);
 void PowerIteration(mat A, double &eiganval, mat &eiganvector);
@@ -341,7 +341,7 @@ void split(mat A, mat &L, mat &D, mat &U) {
 	}
 }
 
-mat JacobiIterative(mat A, mat b, mat guess, int iters = 100) {
+mat JacobiIterative(mat A, mat b, mat guess, int &count, int iters = 100) {
 	int N = A.cols();
 	mat L(N, N), D(N, N), U(N, N);
 	split(A, L, D, U);
@@ -354,6 +354,7 @@ mat JacobiIterative(mat A, mat b, mat guess, int iters = 100) {
 		xnew = Dinv * (b - LU * xold);
 		i++;
 	}
+	count = i;
 	return xold;
 }
 
@@ -397,11 +398,11 @@ mat GaussSeidel(mat A, mat b, mat guess, vector<double> &twoN, int errordiv, int
 	return xold;
 }
 
-mat GaussSeidel(mat A, mat b, mat guess, int iters = 100) {
+mat GaussSeidel(mat A, mat b, mat guess, int &count, int iters = 100) {
 	int n = A.cols();
 	mat xold = guess, xnew(0, 1, n);
 	unsigned int c = 0;
-	double epsilon = pow(10, -20);
+	double epsilon = pow(10, -5);
 	while (abs(norm(xnew) - norm(xold)) > epsilon && c < iters) {
 		xnew = xold;
 		for (int i = 0; i < n; i++) {
@@ -414,6 +415,7 @@ mat GaussSeidel(mat A, mat b, mat guess, int iters = 100) {
 		}
 		c++;
 	}
+	count = c;
 	return xold;
 }
 mat SOR(mat A, mat b, mat guess, double con, vector<double> &twoN, int errordiv, int iters = 100) {

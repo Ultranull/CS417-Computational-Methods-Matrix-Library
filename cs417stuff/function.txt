@@ -1,0 +1,3 @@
+set hidden3d
+set dgrid3d 50, 50 qnorm 2
+splot 'x_graph.dat' with lines
