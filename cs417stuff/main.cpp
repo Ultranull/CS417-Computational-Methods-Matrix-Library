@@ -201,17 +201,25 @@ void interactiveMenu() {
 		case 12: {
 			int nx=sqrt(x.rows()), ny= sqrt(x.rows());
 			ofstream out;
-			out.open("x_graph.dat");
-			for(int y=0;y<ny;y++)
-				for (int xx = 0; xx < nx; xx++){
-					out <<xx<<" "<<y<<" "<<x[0][xx + y * nx]<<"\n";
+			out.open("x_graph.dat"); 
+			float min = 0xff, max = -0xff;
+			for (int xx = 0; xx < nx; xx++) {
+				for (int y = 0; y < ny; y++) {
+					float z = x[0][xx + y * nx];
+					out << xx << " " << y << " " << z << "\n";
+					min = z < min ? z : min;
+					max = z > max ? z : max;
 				}
+				out << "\n";
+			}
 			out.close();
 
 			out.open("function.txt");
-			out << "set hidden3d\n"<<
-				   "set dgrid3d 50, 50 qnorm 2\n"<<
-				   "splot 'x_graph.dat' with lines\n";
+			out << //"set hidden3d\n"<<
+				   "set pm3d\n"<<
+				   "set palette defined ("<<min<<" \"blue\", "<<(min+max)/2<<" \"green\", "<<max<<" \"red\")\n"<<
+				   "set pal maxcolors 5\n"<<
+				   "splot 'x_graph.dat' with pm3d\n";
 			out.close();
 
 			system("gnuplot.exe -p function.txt ");
@@ -242,6 +250,25 @@ void interactiveMenu() {
 
 int main() {
 	interactiveMenu();
+
+	/*ifstream fin;
+	fin.open("x_data.txt", ios::in);
+	int n;
+	fin >> n;
+	mat x = mat(1, n);
+	double val;
+	for (int i = 0; i < n; i++) {
+		fin >> val;
+		x[0][i] = val;
+	}
+	fin.close();
+
+	default_random_engine gen(time(NULL));
+	mat A = nonsingularMatrix(gen, 0, 1, n);
+	mat b = A * x;
+
+	save(A, b, "test2.txt");*/
+
 	cout << "done!\n";
 	getchar();
 }
