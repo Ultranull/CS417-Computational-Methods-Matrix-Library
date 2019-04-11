@@ -126,24 +126,26 @@ void interactiveMenu() {
 			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
 		}break;
 		case 6: {
-			int iters;
+			int iters,count;
 			cout << "number of iterations?: ";
 			cin >> iters;
 			t1 = high_resolution_clock::now();
-			x = JacobiIterative(A, b, b, iters);
+			x = JacobiIterative(A, b, b,count , iters);
 			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
 			cout << "\nx:\n" << x;
 			cout << "2-norm: " << norm(A * x - b)<<endl;
+			cout << "number of iterations: " << count << "\n";
 		}break;
 		case 7: {
-			int iters;
+			int iters,count;
 			cout << "number of iterations?: ";
 			cin >> iters;
 			t1 = high_resolution_clock::now();
-			x = GaussSeidel(A, b, b, iters);
+			x = GaussSeidel(A, b, b,count , iters);
 			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
 			cout << "\nx:\n" << x;
 			cout << "2-norm: " << norm(A * x - b) << endl;
+			cout << "number of iterations: " << count << "\n";
 		}break;
 		case 8: {
 			int iters;
@@ -205,17 +207,11 @@ void interactiveMenu() {
 					out <<xx<<" "<<y<<" "<<x[0][xx + y * nx]<<"\n";
 				}
 			out.close();
-			out.open("b_graph.dat");
-			for (int y = 0; y<ny; y++)
-				for (int xx = 0; xx < nx; xx++) {
-					out << xx << " " << y << " " << b[0][xx + y * nx] << "\n";
-				}
-			out.close();
 
 			out.open("function.txt");
 			out << "set hidden3d\n"<<
 				   "set dgrid3d 50, 50 qnorm 2\n"<<
-				   "splot 'x_graph.dat' with lines,'b_graph.dat' with lines\n";
+				   "splot 'x_graph.dat' with lines\n";
 			out.close();
 
 			system("gnuplot.exe -p function.txt ");
