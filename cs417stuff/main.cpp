@@ -310,6 +310,6 @@ int main() {
 	save(A, b, "test2.txt");*/
 
 	cout << "done!\n";
-	getchar();
+	//getchar();
 }
 

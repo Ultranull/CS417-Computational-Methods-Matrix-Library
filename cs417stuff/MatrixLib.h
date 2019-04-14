@@ -402,7 +402,7 @@ mat GaussSeidel(mat A, mat b, mat guess, int &count, int iters = 100) {
 	int n = A.cols();
 	mat xold = guess, xnew(0, 1, n);
 	unsigned int c = 0;
-	double epsilon = pow(10, -5);
+	double epsilon = pow(10, -20);
 	while (abs(norm(xnew) - norm(xold)) > epsilon && c < iters) {
 		xnew = xold;
 		for (int i = 0; i < n; i++) {
