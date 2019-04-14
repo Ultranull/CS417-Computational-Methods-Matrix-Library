@@ -1,0 +1,4 @@
+set pm3d
+set palette defined (85.0024 "blue", 89.595 "green", 94.1875 "red")
+set pal maxcolors 5
+splot 'x_graph.dat' with pm3d

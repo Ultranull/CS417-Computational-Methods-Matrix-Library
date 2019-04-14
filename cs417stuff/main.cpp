@@ -8,6 +8,7 @@
 #include <ctime>
 #include <chrono>
 #include <string>
+#include <sstream>
 #include <stdlib.h>
 
 #define MAT_IMPL
@@ -72,12 +73,15 @@ int menu() {
 	cout << "12. Graph current solution vector x using GNUPLOT\n";
 	cout << "13. display A and b\n";
 	cout << "14. display stored data information\n";
+	cout << "15. create log file\n";
 	cout << "0. exit\n";
 
 	cin >> option;
 	return option;
 }
 void interactiveMenu() {
+	ofstream log;
+	bool makelog = false;
 	default_random_engine gen(time(NULL)); 
 	high_resolution_clock::time_point t1;
 	mat A(1,2,2), b(1, 1, 2),L,U,D,x,eiganvec;
@@ -101,6 +105,7 @@ void interactiveMenu() {
 			cout << "what file?: ";
 			cin >> n;
 			load(A, b, n);
+			if (makelog)log << "opening file:" << n << endl;
 			x = mat();
 			eiganvec = mat();
 			eiganVal = -0xff;
@@ -112,18 +117,24 @@ void interactiveMenu() {
 			cout << "what file?: ";
 			cin >> n;
 			save(A, b, n);
+			if (makelog)log << "saving file:" << n << endl;
+
 		}break;
 		case 4: {
 			t1 = high_resolution_clock::now();
 			x = GaussianElimination(A, b);
 			cout << "\nx:\n" << x;
-			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
+			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
+			cout << time << " milliseconds \n";
+			if (makelog)log << "GaussianElimination in " << time << " milliseconds \n" << " with x = \n"<<x<<endl;
 		}break;
 		case 5: {
 			t1 = high_resolution_clock::now();
 			x = LUDecomposition(A, b);
 			cout << "\nx:\n" << x;
-			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
+			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
+			cout << time << " milliseconds \n";
+			if (makelog)log << "LUDecomposition in " << time << " milliseconds \n" << " with x = \n" << x << endl;
 		}break;
 		case 6: {
 			int iters,count;
@@ -131,10 +142,16 @@ void interactiveMenu() {
 			cin >> iters;
 			t1 = high_resolution_clock::now();
 			x = JacobiIterative(A, b, b,count , iters);
-			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
+			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
+			cout << time << " milliseconds \n";
 			cout << "\nx:\n" << x;
-			cout << "2-norm: " << norm(A * x - b)<<endl;
+			double norm2 = norm(A * x - b);
+			cout << "2-norm: " << norm2<<endl;
 			cout << "number of iterations: " << count << "\n";
+			if (makelog)log << "JacobiIterative in " << time << " milliseconds \n" <<
+							   "2norm = " << norm2 << endl<<
+							   "iterations = " << count << endl <<
+							   "x = \n" << x << endl;
 		}break;
 		case 7: {
 			int iters,count;
@@ -142,10 +159,16 @@ void interactiveMenu() {
 			cin >> iters;
 			t1 = high_resolution_clock::now();
 			x = GaussSeidel(A, b, b,count , iters);
-			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
+			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
+			cout << time << " milliseconds \n";
 			cout << "\nx:\n" << x;
-			cout << "2-norm: " << norm(A * x - b) << endl;
+			double norm2 = norm(A * x - b);
+			cout << "2-norm: " << norm2 << endl;
 			cout << "number of iterations: " << count << "\n";
+			if (makelog)log << "GaussSeidel in " << time << " milliseconds \n" <<
+				"2norm = " << norm2 << endl <<
+				"iterations = " << count << endl <<
+				"x = \n" << x << endl;
 		}break;
 		case 8: {
 			int iters;
@@ -153,9 +176,16 @@ void interactiveMenu() {
 			cin >> iters;
 			t1 = high_resolution_clock::now();
 			x = SOR(A, b, b,1.2,iters);
-			cout << duration<double, std::milli>(high_resolution_clock::now() - t1).count() << " milliseconds \n";
+			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
+			cout << time << " milliseconds \n";
 			cout << "\nx:\n" << x;
-			cout << "2-norm: " << norm(A * x - b) << endl;
+			double norm2 = norm(A * x - b);
+			cout << "2-norm: " << norm2 << endl;
+			cout << "number of iterations: " << iters << "\n";
+			if (makelog)log << "SOR in " << time << " milliseconds \n" <<
+				"2norm = " << norm2 << endl <<
+				"iterations = " << iters << endl <<
+				"x = \n" << x << endl;
 		}break;
 		case 9: {
 			t1 = high_resolution_clock::now();
@@ -226,6 +256,7 @@ void interactiveMenu() {
 		}break;
 		case 13: {
 			cout << "\nA: \n" << A << "b:\n" << b << endl;
+			if (makelog)log << "\nA: \n" << A << "b:\n" << b << endl;
 		}break;
 		case 14: {
 			cout << "\nA[" << A.rows() << "][" << A.cols() << "]\n";
@@ -239,10 +270,19 @@ void interactiveMenu() {
 			}
 			else cout << "no eigan value or vector calculated\n";
 		}break;
+		case 15: {
+			stringstream ss;
+			double time = duration<double, std::nano>(high_resolution_clock::now() - t1).count();
+			ss << "log" << (time) << ".txt";
+			log.open(ss.str());
+			makelog = true;
+		}break;
 		}
 
 
 	}
+
+	log.close();
 }
 
 
