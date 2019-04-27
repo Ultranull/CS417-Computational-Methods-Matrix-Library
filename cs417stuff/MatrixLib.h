@@ -195,7 +195,7 @@ void swapROW(mat &x, int a, int b) {
 }
 void upperTriangular(mat &A, mat &b) {
 	for (int k = 0; k < A.cols(); k++) {
-		int ind = 0;
+		/*int ind = 0;
 		double max = 0;
 		for (int i = 0; i < A.rows(); i++)
 			if (abs(A[k][i]) > max) {
@@ -203,20 +203,26 @@ void upperTriangular(mat &A, mat &b) {
 				max = abs(A[k][i]);
 			}
 		swapROW(A, ind, k);
-		swapROW(b, ind, k);
+		swapROW(b, ind, k);*/
 
 
-		double Ak = A(k);
-		mat rowk = A.row(k);
+		//double Ak = A[k][k];
+
+		/*for (int i = 0; i<A.cols(); i++) {
+			A[i][k] = A[i][k] / Ak;
+		}
+		b[0][k] = b[0][k] / Ak;*/
+
+		/*mat rowk = A.row(k);
 		rowk = rowk / Ak;
 		A.insertROW(k, rowk);
 
 		mat bk = b.row(k);
 		bk = bk / Ak;
-		b.insertROW(k, bk);
+		b.insertROW(k, bk);*/
 
 		for (int r = k + 1; r < A.rows(); r++) {
-			double val = A[k][r];
+			double val = A[k][r]/ A[k][k];
 			for (int j = k; j < A.cols(); j++) {
 				A[j][r] = A[j][r] - (val*A[j][k]);
 			}
@@ -226,8 +232,8 @@ void upperTriangular(mat &A, mat &b) {
 }
 
 mat backSolve(mat A, mat b) {
-	mat x = b;
-	x[0][x.rows() - 1] = b[0][b.rows() - 1];
+	//mat x(1,b.rows());
+	/*x[0][x.rows() - 1] = b[0][b.rows() - 1]/A[A.cols()-1][A.rows()-1];
 	for (int r = A.rows() - 2; r >= 0; r--) {
 		double sum = 0;
 		for (int c = r + 1; c < A.cols(); c++) {
@@ -235,7 +241,16 @@ mat backSolve(mat A, mat b) {
 		}
 		x[0][r] = b[0][r] - sum;
 	}
+	return x;*/
+	mat x = b;
+	for (int r = A.rows() - 1; r >= 0; r--) {
+		for (int c = r + 1; c < A.cols(); c++) {
+			x[0][r] -= A[c][r] * x[0][c];
+		}
+		x[0][r] = x[0][r]/A(r);
+	}
 	return x;
+
 }
 
 mat forwordSolve(mat A, mat b) {
@@ -253,7 +268,7 @@ mat forwordSolve(mat A, mat b) {
 
 mat GaussianElimination(mat A, mat b) {
 	upperTriangular(A, b);
-	cout << "back solving" << endl;
+	//cout << A << endl;
 	return backSolve(A, b);
 }
 

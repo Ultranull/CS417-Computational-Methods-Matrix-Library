@@ -288,7 +288,26 @@ void interactiveMenu() {
 
 
 int main() {
-	interactiveMenu();
+	//interactiveMenu();
+
+
+	default_random_engine gen(time(NULL));
+	int n = 500;
+	mat A = nonsingularMatrix(gen, 0, 10,n,true);
+	mat b = randomVector(gen, 0, 10, n, true);
+
+	//cout << A << endl;
+
+	high_resolution_clock::time_point t1;
+	t1 = high_resolution_clock::now();
+	mat x = GaussianElimination(A, b);
+
+	double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
+	double norm2 = norm(A * x - b);
+
+
+	cout << norm2 << endl;
+	cout << time << endl;
 
 	/*ifstream fin;
 	fin.open("x_data.txt", ios::in);
