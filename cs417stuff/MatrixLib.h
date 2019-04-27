@@ -253,6 +253,7 @@ mat forwordSolve(mat A, mat b) {
 
 mat GaussianElimination(mat A, mat b) {
 	upperTriangular(A, b);
+	cout << "back solving" << endl;
 	return backSolve(A, b);
 }
 
@@ -441,11 +442,10 @@ mat SOR(mat A, mat b, mat guess, double con, vector<double> &twoN, int errordiv,
 	}
 	return xold;
 }
-mat SOR(mat A, mat b, mat guess, double con, int iters = 100) {
+mat SOR(mat A, mat b, mat guess, double omega,int &count, int iters = 100) {
 	int n = A.cols();
 	mat xold = guess, xnew(0, 1, n);
 	unsigned int c = 0;
-	double omega = 0;
 	double epsilon = pow(10, -20);
 	while (abs(norm(xnew) - norm(xold)) > epsilon && c < iters) {
 		xnew = xold;
@@ -455,11 +455,11 @@ mat SOR(mat A, mat b, mat guess, double con, int iters = 100) {
 				if (j != i)
 					theta = theta + A[j][i] * xold[0][j];
 			}
-			omega = con;
 			xold[0][i] = (1. - omega)*xold[0][i] + (omega / A[i][i])*(b[0][i] - theta);
 		}
 		c++;
 	}
+	count = c;
 	return xold;
 }
 void PowerIteration(mat A, double &eiganval, mat &eiganvector) {

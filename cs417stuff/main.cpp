@@ -123,15 +123,15 @@ void interactiveMenu() {
 		case 4: {
 			t1 = high_resolution_clock::now();
 			x = GaussianElimination(A, b);
-			cout << "\nx:\n" << x;
 			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
 			cout << time << " milliseconds \n";
+			double norm2 = norm(A * x - b);
+			cout << "2-norm: " << norm2 << endl;
 			if (makelog)log << "GaussianElimination in " << time << " milliseconds \n" << " with x = \n"<<x<<endl;
 		}break;
 		case 5: {
 			t1 = high_resolution_clock::now();
 			x = LUDecomposition(A, b);
-			cout << "\nx:\n" << x;
 			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
 			cout << time << " milliseconds \n";
 			if (makelog)log << "LUDecomposition in " << time << " milliseconds \n" << " with x = \n" << x << endl;
@@ -144,14 +144,12 @@ void interactiveMenu() {
 			x = JacobiIterative(A, b, b,count , iters);
 			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
 			cout << time << " milliseconds \n";
-			cout << "\nx:\n" << x;
 			double norm2 = norm(A * x - b);
 			cout << "2-norm: " << norm2<<endl;
 			cout << "number of iterations: " << count << "\n";
 			if (makelog)log << "JacobiIterative in " << time << " milliseconds \n" <<
 							   "2norm = " << norm2 << endl<<
-							   "iterations = " << count << endl <<
-							   "x = \n" << x << endl;
+							   "iterations = " << count << endl;
 		}break;
 		case 7: {
 			int iters,count;
@@ -161,31 +159,32 @@ void interactiveMenu() {
 			x = GaussSeidel(A, b, b,count , iters);
 			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
 			cout << time << " milliseconds \n";
-			cout << "\nx:\n" << x;
 			double norm2 = norm(A * x - b);
 			cout << "2-norm: " << norm2 << endl;
 			cout << "number of iterations: " << count << "\n";
 			if (makelog)log << "GaussSeidel in " << time << " milliseconds \n" <<
 				"2norm = " << norm2 << endl <<
-				"iterations = " << count << endl <<
-				"x = \n" << x << endl;
+				"iterations = " << count << endl;
 		}break;
 		case 8: {
 			int iters;
 			cout << "number of iterations?: ";
 			cin >> iters;
+			double omega;
+			cout << "omega?: ";
+			cin >> omega;
+			int count;
 			t1 = high_resolution_clock::now();
-			x = SOR(A, b, b,1.2,iters);
+			x = SOR(A, b, b, omega,count,iters);
 			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
 			cout << time << " milliseconds \n";
-			cout << "\nx:\n" << x;
 			double norm2 = norm(A * x - b);
 			cout << "2-norm: " << norm2 << endl;
-			cout << "number of iterations: " << iters << "\n";
+			cout << "number of iterations: " << count << "\n";
 			if (makelog)log << "SOR in " << time << " milliseconds \n" <<
 				"2norm = " << norm2 << endl <<
-				"iterations = " << iters << endl <<
-				"x = \n" << x << endl;
+				"omega = " << omega << endl <<
+				"iterations = " << count << endl;
 		}break;
 		case 9: {
 			t1 = high_resolution_clock::now();
