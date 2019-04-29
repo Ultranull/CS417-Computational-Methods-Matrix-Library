@@ -239,46 +239,53 @@ void interactiveMenu() {
 			cout << "where x = " << root << endl;
 		}break;
 		case 12: {
-			int nx=sqrt(x.rows()), ny= sqrt(x.rows());
-			ofstream out;
-			out.open("x_graph.txt"); 
+			int nx = sqrt(x.rows()), ny = sqrt(x.rows());
+			ofstream out, outexcel;
+			out.open(fn + "_x_gnuplot.txt");
+			outexcel.open(fn + "_x_excel.txt");
 			float min = 0xff, max = -0xff;
 			for (int xx = 0; xx < nx; xx++) {
 				for (int y = 0; y < ny; y++) {
 					float z = x[0][xx + y * nx];
 					out << xx << " " << y << " " << z << "\n";
+					outexcel << z << " ";
 					min = z < min ? z : min;
 					max = z > max ? z : max;
 				}
+				outexcel << "\n";
 				out << "\n";
 			}
 			out.close();
-
+			outexcel.close();
 			out.open("function.txt");
 			out << //"set hidden3d\n"<<
-				   "set pm3d\n"<<
-				   "set palette defined ("<<min<<" \"blue\", "<<(min+max)/2<<" \"green\", "<<max<<" \"red\")\n"<<
-				   "set pal maxcolors 50\n"<<
-				   "splot 'x_graph.txt' with pm3d\n";
+				"set pm3d\n" <<
+				"set palette defined (" << min << " \"blue\", " << (min + max) / 2 << " \"green\", " << max << " \"red\")\n" <<
+				"set pal maxcolors 50\n" <<
+				"splot '" + fn + "_x_gnuplot.txt' with pm3d\n";
 			out.close();
 
 			system("gnuplot.exe -p function.txt ");
 		}break;
 		case 13: {
 			int nx = sqrt(x.rows()), ny = sqrt(x.rows());
-			ofstream out;
-			out.open("x_graph.txt");
+			ofstream out,outexcel;
+			out.open(fn+"_x_gnuplot.txt");
+			outexcel.open(fn + "_x_excel.txt");
 			float min = 0xff, max = -0xff;
 			for (int xx = 0; xx < nx; xx++) {
 				for (int y = 0; y < ny; y++) {
 					float z = x[0][xx + y * nx];
 					out << xx << " " << y << " " << z << "\n";
+					outexcel << z<<" ";
 					min = z < min ? z : min;
 					max = z > max ? z : max;
 				}
+				outexcel << "\n";
 				out << "\n";
 			}
-			out.close();
+			out.close(); 
+			outexcel.close();
 			if (makelog)log << "saving image to " << fn << ".png\n";
 			out.open("function.txt");
 			out << //"set hidden3d\n"<<
@@ -287,7 +294,7 @@ void interactiveMenu() {
 				"set pm3d\n" <<
 				"set palette defined (" << min << " \"blue\", " << (min + max) / 2 << " \"green\", " << max << " \"red\")\n" <<
 				"set pal maxcolors 50\n" <<
-				"splot 'x_graph.txt' with pm3d\n";
+				"splot '"+ fn + "_x_gnuplot.txt' with pm3d\n";
 			out.close();
 
 			system("gnuplot.exe -p function.txt ");

@@ -188,7 +188,7 @@ double NewtonsMethod(polynomial f, double guess = 1., int max = 100, double epsi
 	return xnew;
 }
 
-double NewtonsMethod(ofstream &out,polynomial f, double guess = 1., int max = 100, double epsilon = -15) {
+double NewtonsMethod(ofstream &out,polynomial f, double guess = 1., int max = 100, double epsilon = -7) {
 	double x0 = guess, xnew = 0, error = abs(f(x0)), tol = pow(10, epsilon);
 	int ct = 0;
 	polynomial dfdx = ddx(f);
