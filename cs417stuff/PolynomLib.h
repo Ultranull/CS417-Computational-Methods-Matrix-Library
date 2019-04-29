@@ -1,11 +1,16 @@
 #pragma once
 
+#ifndef POLYNIMLIB
+#define POLYNIMLIB
+
 #include <math.h>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <random>
 #include <algorithm>
 #include <limits>
+#include <functional>
 
 
 using namespace std;
@@ -36,8 +41,10 @@ polynomial ddx(polynomial f);
 polynomial sdx(polynomial f);
 
 polynomial randomPolynom(default_random_engine &gen, double minc, double maxc, double mine, double maxe, int n, bool rounded);
-double NewtonsMethod(polynomial f, double guess, int max, double epsilon);
+double NewtonsMethod(polynomial f, double guess, int max, double epsilon); 
+double NewtonsMethod(ofstream &out, polynomial f, double guess, int max, double epsilon);
 double Bisection(polynomial f, double xL, double xR, int max = 100);
+double Bisection(const std::function <double(double)>& f, double xL, double xR, int max,ofstream &out);
 
 #ifdef POLY_IMPL
 term::term(double c, double e) :e(e), c(c) {}
@@ -181,6 +188,21 @@ double NewtonsMethod(polynomial f, double guess = 1., int max = 100, double epsi
 	return xnew;
 }
 
+double NewtonsMethod(ofstream &out,polynomial f, double guess = 1., int max = 100, double epsilon = -15) {
+	double x0 = guess, xnew = 0, error = abs(f(x0)), tol = pow(10, epsilon);
+	int ct = 0;
+	polynomial dfdx = ddx(f);
+	out << "derivative: " << dfdx <<" = 0"<< endl;
+	while (error > tol&&ct < max) {
+		xnew = x0 - (f(x0) / dfdx(x0));
+		error = abs(f(xnew));
+		out << ct << " x0: " << x0 << " xnew: " << xnew <<" abs(f(xnew))= "<<error<<endl;
+		x0 = xnew;
+		ct++;
+	}
+	return xnew;
+}
+
 double Bisection(polynomial f, double xL, double xR, int max) {
 
 	double xMid;
@@ -219,6 +241,45 @@ double Bisection(polynomial f, double xL, double xR, int max) {
 	return xMid;
 
 }
+double Bisection(const std::function <double(double)>& f, double xL, double xR, int max, ofstream &out) {
 
+	double xMid;
+	double fL, fR, fMid;
+
+	xMid = (xL + xR) / 2.0;
+	int ct = 0;
+	double error = abs(f(xMid));
+	double tol = pow(10, -15);
+	while (error > tol && ct <= max) {
+		fL = f(xL);
+		fR = f(xR);
+		fMid = f(xMid);
+		error = abs(fMid);
+		if (error > tol) {
+			if ((fL > 0) && (fR > 0) && (fMid > 0)) {
+				if (fR > fL) { xR = xMid; }
+				else { xL = xMid; }
+			}
+
+			else if (fMid > 0) {
+				if (fL < 0) { xR = xMid; }
+				else if (fR < 0) { xL = xMid; }
+			}
+			else if (fMid < 0)
+			{
+				if (fL > 0) { xR = xMid; }
+				else if (fR > 0) { xL = xMid; }
+			}
+
+			xMid = (xR + xL) / 2.0;
+		}
+		out << ct << " left: " << xL << " right: " << xR << " middle: " << xMid<<" f of middle: "<<fMid<< endl;
+		ct++;
+
+	}
+	return xMid;
+
+}
 
 #endif // POLY_IMPL
+#endif

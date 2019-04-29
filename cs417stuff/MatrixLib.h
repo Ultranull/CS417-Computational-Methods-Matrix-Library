@@ -1,5 +1,8 @@
 #pragma once
 
+#ifndef MATRIXLIB
+#define MATRIXLIB
+
 #include <iostream>
 #include <iomanip>
 #include <vector>
@@ -195,7 +198,7 @@ void swapROW(mat &x, int a, int b) {
 }
 void upperTriangular(mat &A, mat &b) {
 	for (int k = 0; k < A.cols(); k++) {
-		int ind = 0;
+		/*int ind = 0;
 		double max = 0;
 		for (int i = 0; i < A.rows(); i++)
 			if (abs(A[k][i]) > max) {
@@ -203,7 +206,7 @@ void upperTriangular(mat &A, mat &b) {
 				max = abs(A[k][i]);
 			}
 		swapROW(A, ind, k);
-		swapROW(b, ind, k);
+		swapROW(b, ind, k);*/
 
 
 		double Ak = A(k);
@@ -253,7 +256,6 @@ mat forwordSolve(mat A, mat b) {
 
 mat GaussianElimination(mat A, mat b) {
 	upperTriangular(A, b);
-	cout << "back solving" << endl;
 	return backSolve(A, b);
 }
 
@@ -477,3 +479,4 @@ void PowerIteration(mat A, double &eiganval, mat &eiganvector) {
 	eiganval = mu;
 }
 #endif // MAT_IMPL
+#endif

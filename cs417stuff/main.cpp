@@ -11,6 +11,7 @@
 #include <sstream>
 #include <stdlib.h>
 
+
 #define MAT_IMPL
 #include "MatrixLib.h"
 #define POLY_IMPL
@@ -71,9 +72,11 @@ int menu() {
 	cout << "10. Find a root to polynomial using newtons method\n";
 	cout << "11. Find a root to polynomial using bisection\n";
 	cout << "12. Graph current solution vector x using GNUPLOT\n";
-	cout << "13. display A and b\n";
-	cout << "14. display stored data information\n";
-	cout << "15. create log file\n";
+	cout << "13. Save current solution vector x using GNUPLOT\n";
+	cout << "14. display A and b\n";
+	cout << "15. display stored data information\n";
+	cout << "16. create log file\n";
+	cout << "17. load a command file\n";
 	cout << "0. exit\n";
 
 	cin >> option;
@@ -86,6 +89,9 @@ void interactiveMenu() {
 	high_resolution_clock::time_point t1;
 	mat A(1,2,2), b(1, 1, 2),L,U,D,x,eiganvec;
 	double eiganVal=-0xff;
+	string fn="out";
+	ifstream commandfile; 
+	streambuf *backup=cin.rdbuf();
 	int option = -1;
 	while (option != 0) {
 		option = menu();
@@ -101,11 +107,10 @@ void interactiveMenu() {
 			eiganVal = -0xff;
 		}break;
 		case 2: {
-			string n;
 			cout << "what file?: ";
-			cin >> n;
-			load(A, b, n);
-			if (makelog)log << "opening file:" << n << endl;
+			cin >> fn;
+			load(A, b, fn);
+			if (makelog)log << "\nopening file:" << fn << endl;
 			x = mat();
 			eiganvec = mat();
 			eiganVal = -0xff;
@@ -127,14 +132,14 @@ void interactiveMenu() {
 			cout << time << " milliseconds \n";
 			double norm2 = norm(A * x - b);
 			cout << "2-norm: " << norm2 << endl;
-			if (makelog)log << "GaussianElimination in " << time << " milliseconds \n" << " with x = \n"<<x<<endl;
+			if (makelog)log << "GaussianElimination in " << time << " milliseconds \n";
 		}break;
 		case 5: {
 			t1 = high_resolution_clock::now();
 			x = LUDecomposition(A, b);
 			double time = duration<double, std::milli>(high_resolution_clock::now() - t1).count();
 			cout << time << " milliseconds \n";
-			if (makelog)log << "LUDecomposition in " << time << " milliseconds \n" << " with x = \n" << x << endl;
+			if (makelog)log << "LUDecomposition in " << time << " milliseconds \n";
 		}break;
 		case 6: {
 			int iters,count;
@@ -205,9 +210,15 @@ void interactiveMenu() {
 			double guess;
 			cout << "please enter a guess for the root: ";
 			cin >> guess;
-			double root = NewtonsMethod(f,guess);
+			double root = 0;
+			if (makelog) {
+				log << "\nnewtons method with " << f <<" = 0"<< endl;
+				root = NewtonsMethod(log,f, guess,100,-5);
+			}else
+				root = NewtonsMethod(f, guess);
 			cout <<f<<endl;
 			cout << "where x = " << root<<endl;
+			if (makelog)log << "where x = " << root << endl;
 		}break;
 		case 11: {
 			int n;
@@ -230,7 +241,7 @@ void interactiveMenu() {
 		case 12: {
 			int nx=sqrt(x.rows()), ny= sqrt(x.rows());
 			ofstream out;
-			out.open("x_graph.dat"); 
+			out.open("x_graph.txt"); 
 			float min = 0xff, max = -0xff;
 			for (int xx = 0; xx < nx; xx++) {
 				for (int y = 0; y < ny; y++) {
@@ -247,40 +258,95 @@ void interactiveMenu() {
 			out << //"set hidden3d\n"<<
 				   "set pm3d\n"<<
 				   "set palette defined ("<<min<<" \"blue\", "<<(min+max)/2<<" \"green\", "<<max<<" \"red\")\n"<<
-				   "set pal maxcolors 5\n"<<
-				   "splot 'x_graph.dat' with pm3d\n";
+				   "set pal maxcolors 50\n"<<
+				   "splot 'x_graph.txt' with pm3d\n";
 			out.close();
 
 			system("gnuplot.exe -p function.txt ");
 		}break;
 		case 13: {
+			int nx = sqrt(x.rows()), ny = sqrt(x.rows());
+			ofstream out;
+			out.open("x_graph.txt");
+			float min = 0xff, max = -0xff;
+			for (int xx = 0; xx < nx; xx++) {
+				for (int y = 0; y < ny; y++) {
+					float z = x[0][xx + y * nx];
+					out << xx << " " << y << " " << z << "\n";
+					min = z < min ? z : min;
+					max = z > max ? z : max;
+				}
+				out << "\n";
+			}
+			out.close();
+			if (makelog)log << "saving image to " << fn << ".png\n";
+			out.open("function.txt");
+			out << //"set hidden3d\n"<<
+				"set term png\n"<<
+				"set output \""<<fn<<".png\"\n"<<
+				"set pm3d\n" <<
+				"set palette defined (" << min << " \"blue\", " << (min + max) / 2 << " \"green\", " << max << " \"red\")\n" <<
+				"set pal maxcolors 50\n" <<
+				"splot 'x_graph.txt' with pm3d\n";
+			out.close();
+
+			system("gnuplot.exe -p function.txt ");
+		}break;
+		case 14: {
 			cout << "\nA: \n" << A << "b:\n" << b << endl;
 			if (makelog)log << "\nA: \n" << A << "b:\n" << b << endl;
 		}break;
-		case 14: {
+		case 15: {
 			cout << "\nA[" << A.rows() << "][" << A.cols() << "]\n";
 			cout << "b[" << b.rows() << "]\n";
 			if(!x.isEmpty())
 				cout << "x[" << x.rows() << "]\n";
 			else cout << "no x calculated\n";
+			if (makelog) {
+				log << "A[" << A.rows() << "][" << A.cols() << "]\n";
+				log << "b[" << b.rows() << "]\n";
+				if (!x.isEmpty())
+					log << "x[" << x.rows() << "]\n";
+				else log << "no x calculated\n";
+			}
 			if (eiganVal != -0xff) {
 				cout << "eigan vector[" << eiganvec.rows() << "]\n";
 				cout << "eigan value = " << eiganVal<<"\n";
 			}
 			else cout << "no eigan value or vector calculated\n";
 		}break;
-		case 15: {
+		case 16: {
 			stringstream ss;
 			double time = duration<double, std::nano>(high_resolution_clock::now() - t1).count();
 			ss << "log" << (time) << ".txt";
 			log.open(ss.str());
 			makelog = true;
 		}break;
+		case 17: {
+			string n;
+			cout << "command file name: \n";
+			cin >> n;
+			commandfile.open(n);
+			if (!commandfile) {
+				cout << "error: command file not found!\n";
+			}
+			backup = cin.rdbuf();
+			cin.rdbuf(commandfile.rdbuf());
+		}break;
+		case 100: {
+			if (makelog) {
+				log << "\nbistection of x + ln(x)=0\n";
+				double xx=Bisection([](double x)->double {return std::log(x) + x; }, .1, 1.,100,log);
+				log << "solution x = " << xx << endl;
+			}
+		}break;
 		}
-
-
+		if (cin.peek() == -1) {
+			cin.rdbuf(backup);
+			cout << "command file completed\a\n";
+		}
 	}
-
+	commandfile.close();
 	log.close();
 }
 
