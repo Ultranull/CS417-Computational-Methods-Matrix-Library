@@ -242,21 +242,17 @@ void interactiveMenu() {
 			int nx = sqrt(x.rows()), ny = sqrt(x.rows());
 			ofstream out, outexcel;
 			out.open(fn + "_x_gnuplot.txt");
-			outexcel.open(fn + "_x_excel.txt");
 			float min = 0xff, max = -0xff;
 			for (int xx = 0; xx < nx; xx++) {
 				for (int y = 0; y < ny; y++) {
 					float z = x[0][xx + y * nx];
 					out << xx << " " << y << " " << z << "\n";
-					outexcel << z << " ";
 					min = z < min ? z : min;
 					max = z > max ? z : max;
 				}
-				outexcel << "\n";
 				out << "\n";
 			}
 			out.close();
-			outexcel.close();
 			out.open("function.txt");
 			out << //"set hidden3d\n"<<
 				"set pm3d\n" <<
@@ -323,10 +319,10 @@ void interactiveMenu() {
 			else cout << "no eigan value or vector calculated\n";
 		}break;
 		case 16: {
-			stringstream ss;
-			double time = duration<double, std::nano>(high_resolution_clock::now() - t1).count();
-			ss << "log" << (time) << ".txt";
-			log.open(ss.str());
+			cout << "enter log name: \n";
+			string name;
+			cin >> name;
+			log.open(name+"_log.txt");
 			makelog = true;
 		}break;
 		case 17: {
